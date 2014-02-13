@@ -52,6 +52,9 @@ public class GameMgr {
     
     //マレットの数取得
     public int CountMallet(){ return _malletList.size(); }
+    public Mallet GetMallet(int id){
+    	return _malletList.get(id);
+    }
     
     public boolean onUpdate() {
             for(int i=0; i<_taskList.size(); i++){

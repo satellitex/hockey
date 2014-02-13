@@ -42,6 +42,23 @@ public class Pack extends Task{
 	@Override
 	public boolean onUpdate() {
 		Circle nc = new Circle(  cir.getX()+vec.getX(), cir.getY()+vec.getY(), cir.getR() );
+		
+		//自分のマレットとの接触判定
+		int n=parent.CountMallet();
+		for(int i=0;i<n;i++){
+			Mallet m = parent.GetMallet(i);
+			if( m.getSurvival() ){
+				Circle mc = m.getCircle();
+				if( GeneralCalc.CheckCircleInCircle(nc, mc) ){
+					float rad = GeneralCalc.CircleToCircleAngle(mc, nc );
+					vec.setF(vec.getF(), rad);
+					vec.addF(GeneralCalc.CircleInCircleSize(nc, mc)/2f);
+					nc.setX(nc.getX()+vec.getX());
+					nc.setY(nc.getY()+vec.getY());
+					break;
+				}
+			}
+		}
 
 		//左端チェック
 		if( GeneralCalc.CheckCircleRefLeft(nc) ){

@@ -17,6 +17,19 @@ public class Vec {
 		vy = _vy;
 	}
 	
+	public void setF(float f,float rad){
+		vx = f*(float)Math.sin(rad);
+		vy = f*(float)Math.cos(rad);
+	}
+	public void addF(float f){
+		float a = this.getAngle();
+		vx += f*(float)Math.sin(a);
+		vy += f*(float)Math.cos(a);
+	}
+	public float getF(){
+		return (float)Math.hypot(vx, vy);
+	}
+	
 	public float getX(){
 		return vx;
 	}

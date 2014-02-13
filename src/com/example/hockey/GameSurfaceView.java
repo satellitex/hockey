@@ -60,7 +60,9 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 		if( (now_input_count <= count) ){
 			for(int i=0;i<count;i++){
 				//Log.d("touch","touch id = "+ i +" X="+event.getX(i)+"Y="+event.getY(i));
-				malletflag |= _gameMgr.AddMallet(new Mallet(event.getX(i),event.getY(i)));
+				if( event.getX(i) > RatioAdjustment.RefLeft() ){
+					malletflag |= _gameMgr.AddMallet(new Mallet(event.getX(i),event.getY(i)));
+				}
 			}
 		}
 		
