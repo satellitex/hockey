@@ -21,24 +21,37 @@ public final class R {
         public static final int activity_vertical_margin=0x7f040001;
     }
     public static final class drawable {
-        public static final int gizagiza=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int klineb=0x7f020002;
-        public static final int kliner=0x7f020003;
-        public static final int mallet_main=0x7f020004;
-        public static final int mallet_main3=0x7f020005;
-        public static final int pack=0x7f020006;
-        public static final int suke=0x7f020007;
-        public static final int suke2=0x7f020008;
-        public static final int suke3n=0x7f020009;
-        public static final int suke3r=0x7f02000a;
-        public static final int waku=0x7f02000b;
+        public static final int bluetoothbuttonoff=0x7f020000;
+        public static final int bluetoothbuttonon=0x7f020001;
+        public static final int gizagiza=0x7f020002;
+        public static final int ic_launcher=0x7f020003;
+        public static final int klineb=0x7f020004;
+        public static final int kliner=0x7f020005;
+        public static final int mallet_main=0x7f020006;
+        public static final int mallet_main3=0x7f020007;
+        public static final int pack=0x7f020008;
+        public static final int searchbuttonoff=0x7f020009;
+        public static final int searchbuttonon=0x7f02000a;
+        public static final int suke=0x7f02000b;
+        public static final int suke2=0x7f02000c;
+        public static final int suke3n=0x7f02000d;
+        public static final int suke3r=0x7f02000e;
+        public static final int waku=0x7f02000f;
     }
     public static final class id {
-        public static final int action_settings=0x7f080000;
+        public static final int action_settings=0x7f080006;
+        public static final int button01=0x7f080000;
+        public static final int imagebutton1=0x7f080002;
+        public static final int imagebutton2=0x7f080003;
+        public static final int nonpaireddevicelist=0x7f080005;
+        public static final int paireddevicelist=0x7f080004;
+        public static final int textview1=0x7f080001;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
+        public static final int connect=0x7f030001;
+        public static final int connectdevice=0x7f030002;
+        public static final int paireddevicelist=0x7f030003;
     }
     public static final class menu {
         public static final int main=0x7f070000;

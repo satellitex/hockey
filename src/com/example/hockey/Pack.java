@@ -51,8 +51,8 @@ public class Pack extends Task{
 				Circle mc = m.getCircle();
 				if( GeneralCalc.CheckCircleInCircle(nc, mc) ){
 					float rad = GeneralCalc.CircleToCircleAngle(mc, nc );
-					vec.setF(vec.getF(), rad);
-					vec.addF(GeneralCalc.CircleInCircleSize(nc, mc)/2f);
+					vec.setF(GeneralCalc.CircleInCircleSize(nc, mc),rad);
+					Log.d("setF","mc:: ("+mc.getX()+","+mc.getY()+") nc:: ("+nc.getX()+","+nc.getY()+") angle = "+GeneralCalc.RadToDegree(rad));
 					nc.setX(nc.getX()+vec.getX());
 					nc.setY(nc.getY()+vec.getY());
 					break;

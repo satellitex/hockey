@@ -3,7 +3,14 @@
     package="com.example.hockey"
     android:versionCode="1"
     android:versionName="1.0" >
-
+    
+	<!--Bluetoothによる通信を許可する-->
+	<uses-permission android:name="android.permission.BLUETOOTH">
+	 </uses-permission>
+	<!--Bluetoothの設定変更を許可する-->
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN">
+	 </uses-permission>
+	    
     <uses-sdk
         android:minSdkVersion="10"
         android:targetSdkVersion="15" />

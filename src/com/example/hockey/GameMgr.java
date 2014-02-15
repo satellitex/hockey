@@ -7,14 +7,16 @@ import android.graphics.Color;
 import android.util.Log;
 
 public class GameMgr {
-
+	
+	private Task Home;
+	private FpsController fps = new FpsController();
 	private LinkedList<Task> _taskList = new LinkedList<Task>(); //タスクリスト
 	private LinkedList<Mallet> _malletList = new LinkedList<Mallet>();//まれっとリスト
 	private Status _state;	//体力
 	
 	public GameMgr() {
+		fps = new FpsController();
 		_state = new Status();
-        _taskList.add( new FpsController() );
         _taskList.add( new TouchPlayer(this) );
         _taskList.add( new Pack(this) );
         _taskList.add( new Kline() );
@@ -57,6 +59,9 @@ public class GameMgr {
     }
     
     public boolean onUpdate() {
+    	
+    		fps.onUpdate();
+    		
             for(int i=0; i<_taskList.size(); i++){
                     if(_taskList.get(i).onUpdate() == false){ //更新失敗なら
                             _taskList.remove(i);              //そのタスクを消す
