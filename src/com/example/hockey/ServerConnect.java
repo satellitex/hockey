@@ -6,6 +6,8 @@ import java.util.UUID;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
+import android.util.Log;
 
 public class ServerConnect extends Thread{
     //サーバー側の処理
@@ -16,9 +18,16 @@ public class ServerConnect extends Thread{
     public final UUID TECHBOOSTER_BTSAMPLE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     
     private Connect connect;
+    private int count;
     
-	public ServerConnect(Connect c, BluetoothAdapter btAdapter ){
+    private ServerActivity parent;
+    final Handler handler;
+    
+	public ServerConnect(ServerActivity p,Connect c, BluetoothAdapter btAdapter,Handler handle){
         //各種初期化
+		handler = handle;
+		parent = p;
+		count = 0;
 		connect = c;
         BluetoothServerSocket tmpServSock = null;
         myServerAdapter = btAdapter;
@@ -30,11 +39,12 @@ public class ServerConnect extends Thread{
         }
         servSock = tmpServSock;		
 	}
-	
+
 	@Override
-	public void run(){
+	public void run(){	
         BluetoothSocket receivedSocket = null;
         while(true){
+        	count++;
             try{
                 //クライアント側からの接続要求待ち。ソケットが返される。
                 receivedSocket = servSock.accept();
@@ -47,9 +57,19 @@ public class ServerConnect extends Thread{
                 //RwClassにmanageSocketを移す
             	connect.setSocket(receivedSocket);
     	        connect.setServet();
+	        	handler.sendEmptyMessage(1);
             	break;
-            }
+            } else {
+//	        	Log.d("ok","count final");
+//	        	KeyEvent key = new KeyEvent(KeyEvent.ACTION_DOWN,KeyEvent.KEYCODE_BACK);
+	        	handler.sendEmptyMessage(0);
+	        	parent.Log("接続タイムアウト");
+//	        	Log.d("ok","count final2");
+	        	break;
+	        }
         }
+        Log.d("koko","koko server connect owari");
+        return;
 	}
 	
 	public void cansel(){

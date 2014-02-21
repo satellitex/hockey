@@ -30,6 +30,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
-
+        <activity android:label="@string/app_name" android:name=".ConnectMenuActivity"></activity>
+        <activity android:label="@string/app_name" android:name=".ConnectClientActivity"></activity>
+        <activity android:label="@string/app_name" android:name=".ClientActivity"></activity>
+        <activity android:label="@string/app_name" android:name=".ServerActivity"></activity>
+	</application>
 </manifest>

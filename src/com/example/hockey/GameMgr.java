@@ -10,19 +10,41 @@ public class GameMgr {
 	
 	private Task Home;
 	private FpsController fps = new FpsController();
-	private LinkedList<Task> _taskList = new LinkedList<Task>(); //タスクリスト
+	private LinkedList<Task> _backList = new LinkedList<Task>();//背景等
+	private LinkedList<Task> _mainList = new LinkedList<Task>();//ゲーム中に使うタスク
+	private Ready ready;//ゲーム前に前面に現れるタスク
+	private Pack pack;
 	private LinkedList<Mallet> _malletList = new LinkedList<Mallet>();//まれっとリスト
 	private Status _state;	//体力
+	private Connect connect;
 	
-	public GameMgr() {
+	private boolean start_flag;
+	
+	public GameMgr(Connect c) {
+		Log.d("koko","koko In GameMgr()");
+		connect = c;
+		start_flag=false;
+		
 		fps = new FpsController();
 		_state = new Status();
-        _taskList.add( new TouchPlayer(this) );
-        _taskList.add( new Pack(this) );
-        _taskList.add( new Kline() );
-        _taskList.add( new MalletPointFrame() );
-        _taskList.add( new MalletPoint(this,_state) );
+		//パック
+		pack = new Pack(this);
+
+		//背景
+		_backList.add( new Kline() );
+		
+		//メイン
+        _mainList.add( new MalletPointFrame() );
+        _mainList.add( new MalletPoint(this,_state) );
+        
+        //前面
+        ready = new Ready();
 	}
+	
+	public void StartRead(){ connect.StartRead(); }
+	
+	public Ready getReady(){ return ready; }
+	public boolean isStart(){ return start_flag; }
     
 	//マレットを追加
     public int AddMallet(Mallet mallet){
@@ -59,35 +81,69 @@ public class GameMgr {
     }
     
     public boolean onUpdate() {
-    	
-    		fps.onUpdate();
+
+    		Log.d("koko","koko In GameMgr.onUpdate()");
     		
-            for(int i=0; i<_taskList.size(); i++){
-                    if(_taskList.get(i).onUpdate() == false){ //更新失敗なら
-                            _taskList.remove(i);              //そのタスクを消す
+    		connect.FastCall();
+    		
+    		//背面
+    		fps.onUpdate();
+            for(int i=0; i<_backList.size(); i++){
+                    if(_backList.get(i).onUpdate() == false){ //更新失敗なら
+                            _backList.remove(i);              //そのタスクを消す
                             i--;
                     }
             }
 
-            for(int i=0; i<_malletList.size(); i++){
-                if(_malletList.get(i).onUpdate() == false){ //更新失敗なら
-                	Log.d("mallet","delete_mallet : "+ i );
-                        _malletList.remove(i);              //そのタスクを消す
-                        i--;
-                }
+            if( start_flag ){
+	            for(int i=0; i<_malletList.size(); i++){
+	                if(_malletList.get(i).onUpdate() == false){ //更新失敗なら
+	                	Log.d("mallet","delete_mallet : "+ i );
+	                        _malletList.remove(i);              //そのタスクを消す
+	                        i--;
+	                }
+	            }
+	            
+	            pack.onUpdate();
+	            
+	            for(int i=0; i<_mainList.size(); i++){
+	                if(_mainList.get(i).onUpdate() == false){ //更新失敗なら
+	                        _mainList.remove(i);              //そのタスクを消す
+	                        i--;
+	                }
+	            }
+            } else {
+	            //前面
+	            if( ready.onUpdate() == false ){
+	            	start_flag = true;
+	            }
             }
+            connect.LastCall();
             
             return true;
     }
 
     public void onDraw(Canvas c) {
+    		Log.d("koko","koko onDraw 0");
             c.drawColor(Color.WHITE);       //白で塗りつぶす
-            for(int i=0; i<_taskList.size(); i++){
-                    _taskList.get(i).onDraw(c);//描画
+            //背面
+            for(int i=0; i<_backList.size(); i++){
+                    _backList.get(i).onDraw(c);//描画
             }
-            for(int i=0; i<_malletList.size(); i++){
-                _malletList.get(i).onDraw(c);//描画
-        }
+            //メイン
+            if( start_flag ){
+	            for(int i=0; i<_malletList.size(); i++){
+	                _malletList.get(i).onDraw(c);//描画
+	            }
+	            pack.onDraw(c);
+	            for(int i=0; i<_backList.size(); i++){
+	                _mainList.get(i).onDraw(c);//描画
+	            }
+            } else {
+            	//前面
+            	ready.onDraw(c);
+            }
+    		Log.d("koko","koko onDraw 1");
     }
 
 }

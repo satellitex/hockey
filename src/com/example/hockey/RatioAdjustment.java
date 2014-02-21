@@ -6,7 +6,6 @@ import android.view.Display;
 import android.view.WindowManager;
 
 public class RatioAdjustment {
-	private static MainActivity main;
 	
 	private static int rleft,rright;
 	private static int goaly;
@@ -18,8 +17,7 @@ public class RatioAdjustment {
 	
 	private static int width,height;
 	
-	public static void init(MainActivity m){
-		main = m;
+	public static void init(MainActivity main){
 		WindowManager wm = (WindowManager)main.getSystemService(Context.WINDOW_SERVICE);
 		Display disp = wm.getDefaultDisplay();
 		width = disp.getWidth();
@@ -36,6 +34,16 @@ public class RatioAdjustment {
 		fsize = (width-rleft);
 		fcenterx = (width + rleft)/2;
 		fcentery = 0;
+	}
+	
+	//純粋な横幅
+	public static int Width(){
+		return width;
+	}
+	
+	//純粋な縦幅
+	public static int Height(){
+		return height;
 	}
 	
 	//←の反射壁のX座標

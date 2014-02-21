@@ -38,6 +38,9 @@ public class GeneralCalc {
 		return c1.getR()+c2.getR() - (float)Math.hypot(c2.getX()-c1.getX(),c2.getY()-c1.getY());
 	}
 	public static float RadToDegree(float rad){
-		return rad * 360/(2*(float)Math.PI);
+		return rad * 360f/(2f*(float)Math.PI);
+	}
+	public static float DegreeToRad(float angle){
+		return angle*(2f*(float)Math.PI)/360f;
 	}
 }

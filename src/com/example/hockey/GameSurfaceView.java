@@ -1,10 +1,8 @@
 package com.example.hockey;
 
-import java.lang.Thread;
-
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.PointF;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -12,15 +10,19 @@ import android.view.SurfaceView;
 
 public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callback, Runnable {
 	
-	private GameMgr _gameMgr = new GameMgr();
+	private GameMgr _gameMgr;
+	
+	private Activity parent;
 	
 	//現在何本指で押してるか
 	private int now_input_count = 0;
 	
 	private Thread _thread;
 	
-	public GameSurfaceView(Context context) {
+	public GameSurfaceView(Context context,Connect c) {
 		super(context);
+		Log.d("koko","koko In GameSurfaceview()");
+		_gameMgr = new GameMgr(c);
 		getHolder().addCallback(this);
 	}
     @Override
@@ -30,19 +32,25 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+		Log.d("koko","koko surfaceCreated()01");
             _thread = new Thread(this);             //別スレッドでメインループを作る
+    		Log.d("koko","koko surfaceCreated()");
             _thread.start();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+    		Log.d("koko","koko surface destroy");
             _thread = null;
     }
     @Override
     public void run() {
+    		_gameMgr.StartRead();
     		while (_thread!=null) { //メインループ
+    				Log.d("koko","koko run start");
             		_gameMgr.onUpdate();
                     onDraw(getHolder());
+                    Log.d("koko","koko run end");
             }
     }
     
@@ -50,31 +58,35 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	public boolean onTouchEventEx(MotionEvent event){
 		
 		
-
-		int count = event.getPointerCount();
-		int malletflag = 0;
-		
-		Log.d("touch","touch count = "+count);
-		
-		//タッチした分だけマレットを追加
-		if( (now_input_count <= count) ){
-			for(int i=0;i<count;i++){
-				//Log.d("touch","touch id = "+ i +" X="+event.getX(i)+"Y="+event.getY(i));
-				if( event.getX(i) > RatioAdjustment.RefLeft() ){
-					malletflag |= _gameMgr.AddMallet(new Mallet(event.getX(i),event.getY(i)));
+		if( _gameMgr.isStart() ){
+			int count = event.getPointerCount();		
+			int malletflag = 0;
+			
+			Log.d("touch","touch count = "+count);
+			
+			//タッチした分だけマレットを追加
+			if( (now_input_count <= count) ){
+				for(int i=0;i<count;i++){
+					//Log.d("touch","touch id = "+ i +" X="+event.getX(i)+"Y="+event.getY(i));
+					if( event.getX(i) > RatioAdjustment.RefLeft() ){
+						malletflag |= _gameMgr.AddMallet(new Mallet(event.getX(i),event.getY(i)));
+					}
 				}
 			}
+			
+			String binary = Integer.toBinaryString(malletflag);
+			Log.d("touch","touch flag = "+binary);
+			
+			//マレットを削除
+			_gameMgr.KillMallet(malletflag);
+		} else {
+			Ready r = _gameMgr.getReady();
+			r.setOk();
 		}
-		
-		String binary = Integer.toBinaryString(malletflag);
-		Log.d("touch","touch flag = "+binary);
-		
-		//マレットを削除
-		_gameMgr.KillMallet(malletflag);
 		
 		return super.onTouchEvent(event);
 	}
-	
+
 
     private void onDraw(SurfaceHolder holder) {
             Canvas c = holder.lockCanvas();
