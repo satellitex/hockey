@@ -1,6 +1,7 @@
 package com.example.hockey;
 
 import java.util.LinkedList;
+import java.util.Scanner;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,7 +20,10 @@ public class GameMgr {
 	private Connect connect;
 	
 	private boolean start_flag;
-	
+
+	private Scanner input;
+	private InputMgr _input;
+		
 	public GameMgr(Connect c) {
 		Log.d("koko","koko In GameMgr()");
 		connect = c;
@@ -27,6 +31,10 @@ public class GameMgr {
 		
 		fps = new FpsController();
 		_state = new Status();
+		
+		//入力
+		_input = new InputMgr(this);
+		
 		//パック
 		pack = new Pack(this);
 
@@ -41,10 +49,14 @@ public class GameMgr {
         ready = new Ready();
 	}
 	
-	public void StartRead(){ connect.StartRead(); }
+	public void StartRead(){ 
+		connect.StartRead();
+	}
 	
 	public Ready getReady(){ return ready; }
+	
 	public boolean isStart(){ return start_flag; }
+	public void gameStart(){ start_flag = true; }
     
 	//マレットを追加
     public int AddMallet(Mallet mallet){
@@ -84,7 +96,19 @@ public class GameMgr {
 
     		Log.d("koko","koko In GameMgr.onUpdate()");
     		
-    		connect.FastCall();
+    		Scanner tmps = null;
+    		
+    		
+    		//データを持ってくる
+    		tmps = connect.FastCall();
+    		if( tmps != null ){
+    			input = tmps;
+    		}
+    		
+    		//入力された情報を反映
+    		if( input != null ){
+    			_input.onUpdate(input);
+    		}
     		
     		//背面
     		fps.onUpdate();
@@ -113,13 +137,25 @@ public class GameMgr {
 	                }
 	            }
             } else {
+            	connect.sendString("0");
 	            //前面
 	            if( ready.onUpdate() == false ){
-	            	start_flag = true;
+	            	connect.sendString("4");
+	            } else if( ready.isHa() ){
+	            	connect.sendString("3");
+	            } else if( ready.isYoi() ){
+	            	connect.sendString("2");
+	            } else if( ready.isOkOk() ){
+	            	connect.sendString("1");
+	            } else {
+	            	connect.sendString("0");	            	
 	            }
             }
-            connect.LastCall();
             
+            tmps = connect.LastCall();
+    		if( tmps != null ){
+    			input = tmps;
+    		}           
             return true;
     }
 

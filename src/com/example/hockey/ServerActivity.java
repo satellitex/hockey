@@ -23,6 +23,7 @@ public class ServerActivity extends Activity {
     ArrayAdapter<String> pairedDeviceAdapter;
     
     public Connect connect;
+    private ServerConnect server;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class ServerActivity extends Activity {
     	final Handler handler=  new Handler() {
     		public void handleMessage(Message msg) {
     			if( msg.equals(0) ){//戻る
-//    				finish();
+    				finish();
     			} else {//ゲーム画面へ遷移
     				//終了処理を記述
     				setScreenContent(0);
@@ -56,10 +57,16 @@ public class ServerActivity extends Activity {
     		}
     	};
     	
-    	ServerConnect server= new ServerConnect(this,connect,mBtAdapter,handler);
+    	server= new ServerConnect(this,connect,mBtAdapter,handler);
     	Log("接続待機中");
     	server.start();
 
+	}
+	
+	@Override
+	public void onDestroy(){
+		Log.d("koko","koko onDdestroy server");
+		server.cancel();
 	}
 	
 	@Override

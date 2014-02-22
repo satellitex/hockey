@@ -49,6 +49,8 @@ public class ServerConnect extends Thread{
                 //クライアント側からの接続要求待ち。ソケットが返される。
                 receivedSocket = servSock.accept();
             }catch(IOException e){
+            	e.printStackTrace();
+	        	handler.sendEmptyMessage(0);
                 break;
             }
  
@@ -72,7 +74,7 @@ public class ServerConnect extends Thread{
         return;
 	}
 	
-	public void cansel(){
+	public void cancel(){
 		try {
 			servSock.close();
 		} catch( IOException e) { }

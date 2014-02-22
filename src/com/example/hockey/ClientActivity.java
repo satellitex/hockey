@@ -29,6 +29,8 @@ public class ClientActivity extends Activity {
 
     public Connect connect;
     
+    public ClientConnect client;
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,7 +57,7 @@ public class ClientActivity extends Activity {
     	final Handler handler=  new Handler() {
     		public void handleMessage(Message msg) {
     			if( msg.equals(0) ){//戻る
-    //				finish();
+    				finish();
     			} else {//ゲーム画面へ遷移
     				//終了処理を記述
     				setScreenContent(0);
@@ -82,7 +84,7 @@ public class ClientActivity extends Activity {
   					Log("device.getNam()と接続中\n");
   					connect.Init();
 	  		        Log.d("onItemClick","onItemClick4.0");
-  		    		ClientConnect client = new ClientConnect(this,connect,device,mBtAdapter,handler);
+  		    		client = new ClientConnect(this,connect,device,mBtAdapter,handler);
 	  		        Log.d("onItemClick","onItemClick4.1");
   		    		client.start();
   		        	Log.d("onItemClick","onItemClick4.2");
@@ -92,6 +94,11 @@ public class ClientActivity extends Activity {
   		
 	}
 	
+	@Override
+	public void onDestroy(){
+		Log.d("koko","koko onDdestroy client");
+		client.cancel();
+	}	
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event){

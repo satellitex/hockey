@@ -25,9 +25,7 @@ public class Connect {
 		Log.d("init","connect init-0");
 		Serverflag = false;
 		Clientflag = false;
-		Log.d("init","connect init0");
 		socket = null;
-		Log.d("init","connect init1");
 		
 		step_count = 0;
 		rcvflag=false;
@@ -51,19 +49,22 @@ public class Connect {
 	public void recieveString(String str){
 		rcvstr = new Scanner(str);
 		int sn = rcvstr.nextInt();
-		Log.d("koko","koko rcvstr count : "+sn);
+		if( Clientflag )Log.d("koko","koko rcvstr Client");
+		if( Serverflag )Log.d("koko","koko rcvstr Server");
+		Log.d("koko","koko rcvstr count : "+sn+" step_count = "+step_count);
 		if( (Clientflag && step_count == sn) ||
-			(Serverflag && step_count< sn) ){
+			(Serverflag && step_count+1== sn) ){
+			Log.d("koko","koko rcv true");
 			rcvflag = true;
 		}
 	}
 	public void sendString(String str){
-		sendstr += " "+str;
+		sendstr += str+" ";
 	}
 	
 	public void StartRead(){
 		read.start();
-		write.set("-1");
+		write.set(new String("-1 "));
 		write.start();
 	}
 	
@@ -72,19 +73,20 @@ public class Connect {
 		Log.d("koko","koko FastCall 0 count+"+step_count);
 		Scanner ret = null;
 		if( Serverflag ){//サーバーなら
+			Log.d("koko","koko Server");
 			//受信結果が真になるまで待つ ( step_count より ↑なら )
-			while( rcvflag );
+			while( rcvflag == false );
+			step_count++;
 			rcvflag=false;
 			ret = rcvstr;
-			step_count++;
-			sendstr = String.format("%d", step_count);
+			sendstr = String.format("%d ", step_count);
 			
 			//受信開始
 //			read.start();
 		}
 		if( Clientflag ){//クライアントなら
-			sendstr = String.format("%d", step_count+1);
-			step_count++;
+			Log.d("koko","koko Client");
+			sendstr = String.format("%d ", step_count+1);
 		}
 		Log.d("koko","koko FastCall 1 count+"+step_count);
 		return ret;
@@ -96,26 +98,23 @@ public class Connect {
 		if( Serverflag ){//サーバーなら
 			//状況を送信
 			write.set(sendstr);
-	//		write.start();
 		}
 		if( Clientflag ){//クライアントなら
 			//受信結果を見る
 			//受信結果が真になるまで待つ( step_count = 0のときのみ飛ばす )
 			if( firstflag == false ){
-				while( rcvflag );
+				while( rcvflag == false );
+				step_count++;
 				rcvflag=false;
 				ret = rcvstr;
 			} else {
-				firstflag=true;
+				step_count++;
+				firstflag=false;
 			}
-			Log.d("koko","koko Client tyukan");
 			//受信開始
-		//	read.start();
-			Log.d("koko","koko Client tyukan2");
 			
 			//状況を送信
 			write.set(sendstr);
-			//write.start();
 		}
 		Log.d("koko","koko LastCall 1");
 		return ret;

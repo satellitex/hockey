@@ -2,10 +2,12 @@ package com.example.hockey;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 import android.bluetooth.BluetoothSocket;
+import android.util.Log;
 
 public class ReadWriteModel extends Thread {
 	public static InputStream in;
@@ -14,60 +16,85 @@ public class ReadWriteModel extends Thread {
 	BluetoothSocket socket;
 	
 	public boolean writef=false;
+	public boolean writeok;
 	public String str;
 	
 	Connect parent;
 	
 	public ReadWriteModel(BluetoothSocket socket,Connect p,boolean wf){
 		writef = wf;
+		writeok=false;
 		parent = p;
 		this.socket = socket;
+		
+		in = null;
+		out = null;
 	}
 	
 	public void set(String str){
 		this.str = str;
+		writeok=true;
 	}
 	
 	public void write(byte[] buf){
 		try {
-			out.write(buf);
+			String rstr = new String(buf,"UTF-8");
+			Log.d("koko","koko write rstr = "+rstr +" num="+buf.length);
+			out.write(buf, 0, buf.length);
 		} catch( IOException e ){
 			e.printStackTrace();
 		}
 	}
 	
+    private String read() throws IOException {
+        byte[] buf = new byte[1024];
+        int numRead = in.read(buf,0,buf.length);
+        if( numRead == 0 ){
+        	Log.d("ret","koko read 0");
+        	return null;
+        }
+        String ret = new String(buf,"utf-8");
+        Log.d("ret","koko read ret = "+ret);
+        return ret;
+    }	
+    
 	@Override
 	public void run(){
 		
 		while ( true ){
-			try {
-				in = socket.getInputStream();
-				out = socket.getOutputStream();
-			} catch( IOException e ){
-				e.printStackTrace();
-			}
 			if( writef ){
-				try {
-					write(str.getBytes("UTF-8"));
-				} catch (UnsupportedEncodingException e) {
-					// TODO 自動生成された catch ブロック
-					e.printStackTrace();
+				if( writeok ){
+					try {
+						out = socket.getOutputStream();
+					} catch( IOException e ){
+						e.printStackTrace();
+					}
+					try {
+						//Log.d("str","koko write str = "+str);
+						write(str.getBytes("UTF-8"));
+					} catch (UnsupportedEncodingException e) {
+						// TODO 自動生成された catch ブロック
+			            Log.e("TAG", "temp sockets not created", e);
+					}
+					writeok = false;
 				}
 			} else {
-				int tmpBuf = 0;
-				byte[] buf = new byte[1024];
 				try {
-					tmpBuf = in.read(buf);
+					in = socket.getInputStream();
+				} catch (IOException e) {
+					// TODO 自動生成された catch ブロック
+		            Log.e("TAG", "temp sockets not created", e);
+				}
+				String rstr = null;
+				try {
+					rstr = read();
 				} catch (IOException e ){
 					e.printStackTrace();
 				}
-				if( tmpBuf != 0 ){
-					try{
-						parent.recieveString(new String(buf,"UTF-8"));
-					} catch( UnsupportedEncodingException e) {
-						e.getStackTrace();
-					}
-					break;
+				Log.d("str","koko read... ");
+				if( rstr != null && !rstr.isEmpty() ){
+				Log.d("str","koko read...OK ");
+						parent.recieveString(rstr);
 				}
 			}
 		}
