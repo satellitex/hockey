@@ -66,12 +66,15 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 			
 			//タッチした分だけマレットを追加
 			if( (now_input_count <= count) ){
+				while( _gameMgr.isMalletUpdate() == 3 );
+				_gameMgr.startMalletUpdate();
 				for(int i=0;i<count;i++){
 					//Log.d("touch","touch id = "+ i +" X="+event.getX(i)+"Y="+event.getY(i));
 					if( event.getX(i) > RatioAdjustment.RefLeft() ){
-						malletflag |= _gameMgr.AddMallet(new Mallet(event.getX(i),event.getY(i)));
+						malletflag |= _gameMgr.AddMallet(new Circle(event.getX(i),event.getY(i),RatioAdjustment.MalletR()));
 					}
 				}
+				_gameMgr.endMalletupdate();
 			}
 			
 			String binary = Integer.toBinaryString(malletflag);

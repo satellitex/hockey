@@ -22,19 +22,51 @@ public class InputMgr{
 			return;
 		}
 		Log.d("koko","koko kind is "+kind);
+		int N;
+		Pack pack;
 		switch ( kind ){
 		case 0:	//スタート前
 			int state = s.nextInt();
+			Ready ready = parent.getReady();
 			Log.d("koko","koko state is "+state);
 			if( state == 4 ){
-				parent.gameStart();
-			} else if( state == 1 ){
-				parent.getReady().setYoi();
+				if( parent.getConnect().isClient() && ready.isHaOK() ){
+					parent.gameStart();
+				}
+			} else if( state >= 1 ){
+				if( parent.getReady().isOkOk() ){
+					parent.getReady().setYoi();
+				}
 			}
 			break;
-		case 1:	//サーバー側
+		case 1:	//クライアント側からくるデータ
+			parent.gameStart();
+			N = s.nextInt();
+			pack = parent.getPack();
+			pack.rmEnemy();
+			for(int i=0;i<N;i++){
+				float x = s.nextFloat();
+				float y = s.nextFloat();
+				float b = s.nextFloat();
+				pack.addEnemy(i, RatioAdjustment.changeHX(x) , RatioAdjustment.changeHY(y), b);
+			}
 			break;
-		case 2:	//クライアント側
+		case 2:	//サーバー側からくるデータ
+			N = s.nextInt();
+			pack = parent.getPack();
+			pack.rmEnemy();
+			float x,y,b,vx,vy;
+			for(int i=0;i<N;i++){
+				x = s.nextFloat();
+				y = s.nextFloat();
+				b = s.nextFloat();
+				pack.addEnemy(i, RatioAdjustment.changeHX(x) , RatioAdjustment.changeHY(y), b);
+			}
+			x = s.nextFloat();
+			y = s.nextFloat();
+			vx = s.nextFloat();
+			vy = s.nextFloat();
+			parent.getPack().set(x, y, vx, vy);
 			break;
 		}
 	}

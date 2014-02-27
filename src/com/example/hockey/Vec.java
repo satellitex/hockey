@@ -51,8 +51,7 @@ public class Vec {
 	public void setY(float y){
 		vy = y;
 	}
-	
-	public float getAngle(){
+	public float getAngle(){//rad
 		return (float)Math.atan2(vy,vx);
 	}
 	

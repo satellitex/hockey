@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 public class Mallet extends Task {
-	private final static float SIZE = 50f;	//初期サイズ
+	private final float SIZE;	//初期サイズ
 	private Circle cir = null;				//マレットの円
 	private Paint paint = new Paint();
 	private Bitmap mainimg;
@@ -25,7 +25,8 @@ public class Mallet extends Task {
 	private Rect src,dst;
 	
 	public Mallet(float x,float y){
-		cir = new Circle( x, y, SIZE );
+		SIZE = RatioAdjustment.MalletD();
+		cir = new Circle( x, y, SIZE/2f );
 		mainimg = BitmapFactory.decodeResource(res, R.drawable.mallet_main);
 		src = new Rect(0,0,mainimg.getWidth(),mainimg.getHeight());
 		dst = new Rect(0,0,mainimg.getWidth(),mainimg.getHeight());
@@ -34,8 +35,6 @@ public class Mallet extends Task {
 		killcount = 0;
 		
 		Log.d("Mallet","Mallet zahyo ( "+x+", "+y+" )");
-		
-		this.onUpdate();
 	}
 	
 	@Override
@@ -108,5 +107,18 @@ public class Mallet extends Task {
 	}
 	public Circle getCircle(){
 		return cir;
+	}
+	
+	public float getHx(){
+		return RatioAdjustment.getHX(cir.getX());
+	}
+	public float getHy(){
+		return RatioAdjustment.getHY(cir.getY());
+	}
+	public float getB(){
+		return bairitu;
+	}
+	public float getCounter(){
+		return resize_counter;
 	}
 }

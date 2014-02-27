@@ -27,7 +27,6 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		
-		RatioAdjustment.init(this);
 
   		setContentView(R.layout.activity_main);
   		setHomeScreenContent();

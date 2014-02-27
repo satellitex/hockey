@@ -32,9 +32,13 @@ public class Ready extends Task {
 	private boolean hazime_flag;
 	private int ok_count;
 	
-	private final int sx,sy;
+	private final int sx,sy,sx2,sx3;
+	
+	private final int p1=10,p2=p1*2,p3=p2+p1/2,p4=p2*2,p5=p4+p1/2,p6=p5+p1/2;
+	private final float pk = 90f/(float)p1;
 	
 	public Ready(){
+		
 		ok_flag=false;
 		ok_count = 0;
 		img1 = BitmapFactory.decodeResource(res, R.drawable.wait_bar);
@@ -44,6 +48,8 @@ public class Ready extends Task {
 		maku = BitmapFactory.decodeResource(res, R.drawable.usukuro);
 
 		sx = 0;
+		sx2 = img1.getWidth();
+		sx3 = sx2*2;
 		sy = RatioAdjustment.Height()/2 - img1.getHeight()/2;
 		
 		src = new Rect(0,0,img1.getWidth(),img1.getHeight());
@@ -59,56 +65,56 @@ public class Ready extends Task {
 	public void setHa(){ if( yoi_flag )hazime_flag = true; }
 	
 	public boolean isOk(){ return ok_flag; }
-	public boolean isOkOk(){ if( ok_count == 20 ) return true; return false; }
+	public boolean isOkOk(){ if( ok_count >= p1 ) return true; return false; }
 	public boolean isYoi(){ return yoi_flag; }
 	public boolean isHa(){ return hazime_flag; }	
+	public boolean isHaOK(){ if( ok_count >= p6 ) return true; return false; }  
 	
 	@Override
 	public boolean onUpdate() {
 		if( ok_flag ){
-			if( ok_count < 20 ){
+			if( ok_count < p1 ){
 				ok_count++;
-				float minus = (float)Math.sin(GeneralCalc.DegreeToRad((float)ok_count*4.5f))*(float)RatioAdjustment.Width();
-				dst1.set(dst1.left-(int)minus, dst1.top, dst1.right-(int)minus, dst1.bottom);
-				dst2.set(dst2.left-(int)minus, dst2.top, dst2.right-(int)minus, dst2.bottom);
+				float minus = (float)Math.sin(GeneralCalc.DegreeToRad((float)ok_count*pk))*(float)RatioAdjustment.Width();
+				dst1.set(sx-(int)minus, dst1.top, sx2-(int)minus, dst1.bottom);
+				dst2.set(sx2-(int)minus, dst2.top, sx3-(int)minus, dst2.bottom);
 			} else {
-				dst2.set(sx,sy,sx+img1.getWidth(),sy+img1.getHeight());
-				dst1.set(sx+img1.getWidth(),sy,sx+img1.getWidth()*2,sy+img1.getHeight());
+				dst2.set(sx,sy,sx2,sy+img1.getHeight());
+				dst1.set(sx2,sy,sx3,sy+img1.getHeight());
 			}
 		}
 		if( yoi_flag ){
-			if( ok_count < 40 ){
+			if( ok_count < p2 ){
 				ok_count++;
-				int tc = ok_count-20;
-				float minus = (float)Math.sin(GeneralCalc.DegreeToRad((float)tc*4.5f))*(float)RatioAdjustment.Width();
-				dst1.set(dst1.left-(int)minus, dst1.top, dst1.right-(int)minus, dst1.bottom);
-				dst2.set(dst2.left-(int)minus, dst2.top, dst2.right-(int)minus, dst2.bottom);
-			} else if( ok_count <70 ){
+				int tc = ok_count-p1;
+				float minus = (float)Math.sin(GeneralCalc.DegreeToRad((float)tc*pk))*(float)RatioAdjustment.Width();
+				dst2.set(sx-(int)minus, dst1.top, sx2-(int)minus, dst1.bottom);
+				dst1.set(sx2-(int)minus, dst2.top, sx3-(int)minus, dst2.bottom);
+			} else if( ok_count <p3 ){
 				ok_count++;
-				dst1.set(sx,sy,sx+img1.getWidth(),sy+img1.getHeight());
-				dst2.set(sx+img1.getWidth(),sy,sx+img1.getWidth()*2,sy+img1.getHeight());
+				dst1.set(sx,sy,sx2,sy+img1.getHeight());
+				dst2.set(sx2,sy,sx3,sy+img1.getHeight());
 			} else {
 				setHa();
 			}
 		}
 		if( hazime_flag ){
-			if( ok_count < 80 ){
+			if( ok_count < p4 ){
 				ok_count++;
-				int tc = ok_count-70;
-				float minus = (float)Math.sin(GeneralCalc.DegreeToRad((float)tc*9f))*(float)RatioAdjustment.Width();
-				dst1.set(dst1.left-(int)minus, dst1.top, dst1.right-(int)minus, dst1.bottom);
-				dst2.set(dst2.left-(int)minus, dst2.top, dst2.right-(int)minus, dst2.bottom);
-			} else if( ok_count < 90 ){
-				dst2.set(sx,sy,sx+img1.getWidth(),sy+img1.getHeight());
-				dst1.set(sx+img1.getWidth(),sy,sx+img1.getWidth()*2,sy+img1.getHeight());
+				int tc = ok_count-p3;
+				float minus = (float)Math.sin(GeneralCalc.DegreeToRad((float)tc*pk*2f))*(float)RatioAdjustment.Width();
+				dst1.set(sx-(int)minus, dst1.top, sx2-(int)minus, dst1.bottom);
+				dst2.set(sx2-(int)minus, dst2.top, sx3-(int)minus, dst2.bottom);
+			} else if( ok_count < p5 ){
+				dst2.set(sx,sy,sx2,sy+img1.getHeight());
+				dst1.set(sx2,sy,sx3,sy+img1.getHeight());
 				ok_count++;
-			} else if( ok_count < 120 ){
+			} else if( ok_count < p6 ){
 				ok_count++;
-				int tc = ok_count-90;
-				float minus = (float)Math.sin(GeneralCalc.DegreeToRad((float)tc*9f))*(float)RatioAdjustment.Width();
-				dst2.set(dst2.left-(int)minus, dst2.top, dst2.right-(int)minus, dst2.bottom);
+				int tc = ok_count-p5;
+				float minus = (float)Math.sin(GeneralCalc.DegreeToRad((float)tc*pk))*(float)RatioAdjustment.Width();
+				dst2.set(sx-(int)minus, dst1.top, sx2-(int)minus, dst1.bottom);
 			} else {
-				dst2.set(sx+img1.getWidth(),sy,sx+img1.getWidth()*2,sy+img1.getHeight());
 				return false;
 			}
 		}

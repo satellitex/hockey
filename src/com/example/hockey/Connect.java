@@ -15,10 +15,15 @@ public class Connect {
 	private ReadWriteModel write;
 	
 	private Scanner rcvstr;
+	private String tmpRcvstr;
+
 	private String sendstr;
 	private boolean rcvflag;
 
 	private boolean firstflag;
+	
+	private boolean send_flag;
+	
 	public Connect(){
 	}
 	public void Init(){
@@ -30,6 +35,7 @@ public class Connect {
 		step_count = 0;
 		rcvflag=false;
 		firstflag=true;
+		send_flag=false;
 	}
 	public void setSocket(BluetoothSocket socket){
 		this.socket = socket;
@@ -46,18 +52,27 @@ public class Connect {
 	public boolean isServer(){ return Serverflag; }
 	public boolean isClient(){ return Clientflag; }
 	
+	public void startSend(){ send_flag=true; }
+	
 	public void recieveString(String str){
-		rcvstr = new Scanner(str);
-		int sn = rcvstr.nextInt();
-		if( Clientflag )Log.d("koko","koko rcvstr Client");
-		if( Serverflag )Log.d("koko","koko rcvstr Server");
-		Log.d("koko","koko rcvstr count : "+sn+" step_count = "+step_count);
-		if( (Clientflag && step_count == sn) ||
-			(Serverflag && step_count+1== sn) ){
-			Log.d("koko","koko rcv true");
-			rcvflag = true;
+		tmpRcvstr = str;
+		rcvflag = true;
+	}
+	
+	private void recieve(){
+		if(rcvflag){
+			step_count++;
+			rcvflag=false;
+			rcvstr = new Scanner(tmpRcvstr);
+			int sn = rcvstr.nextInt();
+			if( Clientflag )Log.d("koko","koko rcvstr Client");
+			if( Serverflag )Log.d("koko","koko rcvstr Server");
+			Log.d("koko","koko rcvstr count : "+sn+" step_count = "+step_count);
+		} else {
+			rcvstr = null;
 		}
 	}
+	
 	public void sendString(String str){
 		sendstr += str+" ";
 	}
@@ -75,14 +90,11 @@ public class Connect {
 		if( Serverflag ){//サーバーなら
 			Log.d("koko","koko Server");
 			//受信結果が真になるまで待つ ( step_count より ↑なら )
-			while( rcvflag == false );
-			step_count++;
-			rcvflag=false;
+			recieve();
 			ret = rcvstr;
 			sendstr = String.format("%d ", step_count);
 			
 			//受信開始
-//			read.start();
 		}
 		if( Clientflag ){//クライアントなら
 			Log.d("koko","koko Client");
@@ -97,15 +109,14 @@ public class Connect {
 		Scanner ret = null;
 		if( Serverflag ){//サーバーなら
 			//状況を送信
-			write.set(sendstr);
+			if( send_flag ) write.set(sendstr);
+			send_flag=false;
 		}
 		if( Clientflag ){//クライアントなら
 			//受信結果を見る
 			//受信結果が真になるまで待つ( step_count = 0のときのみ飛ばす )
 			if( firstflag == false ){
-				while( rcvflag == false );
-				step_count++;
-				rcvflag=false;
+				recieve();
 				ret = rcvstr;
 			} else {
 				step_count++;
@@ -114,7 +125,8 @@ public class Connect {
 			//受信開始
 			
 			//状況を送信
-			write.set(sendstr);
+			if( send_flag ) write.set(sendstr);
+			send_flag=false;
 		}
 		Log.d("koko","koko LastCall 1");
 		return ret;

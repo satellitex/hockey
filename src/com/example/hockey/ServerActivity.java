@@ -29,6 +29,7 @@ public class ServerActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+		RatioAdjustment.init(this);
 		
 		connect = new Connect();
 		_game = new GameSurfaceView(this,connect);

@@ -17,7 +17,8 @@ public class ReadWriteModel extends Thread {
 	
 	public boolean writef=false;
 	public boolean writeok;
-	public String str;
+	private String str;
+	private String tmpStr;
 	
 	Connect parent;
 	
@@ -32,7 +33,7 @@ public class ReadWriteModel extends Thread {
 	}
 	
 	public void set(String str){
-		this.str = str;
+		tmpStr = new String(str);
 		writeok=true;
 	}
 	
@@ -64,6 +65,7 @@ public class ReadWriteModel extends Thread {
 		while ( true ){
 			if( writef ){
 				if( writeok ){
+					str = tmpStr;
 					try {
 						out = socket.getOutputStream();
 					} catch( IOException e ){
@@ -91,7 +93,6 @@ public class ReadWriteModel extends Thread {
 				} catch (IOException e ){
 					e.printStackTrace();
 				}
-				Log.d("str","koko read... ");
 				if( rstr != null && !rstr.isEmpty() ){
 				Log.d("str","koko read...OK ");
 						parent.recieveString(rstr);

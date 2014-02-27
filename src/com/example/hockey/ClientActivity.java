@@ -35,6 +35,8 @@ public class ClientActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+		RatioAdjustment.init(this);
+		
   		setContentView(R.layout.connect);
 
 		connect = new Connect();

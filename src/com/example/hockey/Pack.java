@@ -1,5 +1,7 @@
 package com.example.hockey;
 
+import java.util.LinkedList;
+
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,11 +27,23 @@ public class Pack extends Task{
 	
 	private float refl,refr;
 	
-	public Pack(GameMgr p){
+	LinkedList<EnemyMallet> _enemy;
+	
+	private boolean clientflag;
+	
+	private float tmpAngle;
+	
+	public Pack(GameMgr p,LinkedList<EnemyMallet> enemy){
+		_enemy = enemy;
 		parent = p;
 		packimg = BitmapFactory.decodeResource(res, R.drawable.pack);
-		cir = new Circle(RatioAdjustment.FieldCenterX(),RatioAdjustment.GoalY(),packimg.getWidth()/2f);
-		vec = new Vec(3f,-1f);
+		cir = new Circle(RatioAdjustment.FieldCenterX(),RatioAdjustment.FieldCenterY(),packimg.getWidth()/2f);
+
+		if( p.getConnect().isClient() ){ 
+			vec = new Vec(8f,-10f);
+		} else {
+			vec = new Vec(-8f,10f);
+		}
 		
 		src = new Rect(0,0,packimg.getWidth(),packimg.getHeight());
 		int dx = cir.getDrawX(),dy = cir.getDrawY();
@@ -37,18 +51,65 @@ public class Pack extends Task{
 		
 		refl = RatioAdjustment.RefLeft();
 		refr = RatioAdjustment.RefRight();
+		
+		clientflag = false;
 	}
+	
+	public void rmEnemy(){
+		_enemy.clear();
+	}
+	public void addEnemy(int id,float x,float y,float c){
+		_enemy.add(new EnemyMallet(x,y,c));
+	}
+	
+	public void set(float x,float y,float vx,float vy){
+		vec.set(vx, vy);
+		
+		float angle = GeneralCalc.RadToDegree(vec.getAngle());
+		Log.d("set","koko set ( "+x+", "+y+", "+angle);
+		
+		cir.set( x, y, cir.getR() );
+		dst.set(cir.getDrawX(),cir.getDrawY(),cir.getDrawX()+packimg.getWidth(),cir.getDrawY()+packimg.getHeight());
+
+		//向きに合わせて回転
+		matrix.setRotate(angle);
+		zimg = Bitmap.createBitmap(packimg,0,0,packimg.getWidth(),packimg.getHeight(),matrix,true);
+		src.set(0,0,zimg.getWidth(),zimg.getHeight());
+		clientflag = true;
+	}
+	
+	public float getHx(){ return RatioAdjustment.getHX(cir.getX()); }
+	public float getHy(){ return RatioAdjustment.getHY(cir.getY()); }
+	public float getAn(){ return tmpAngle; }
+	public Vec getVec(){ return vec; }
 	
 	@Override
 	public boolean onUpdate() {
-		Circle nc = new Circle(  cir.getX()+vec.getX(), cir.getY()+vec.getY(), cir.getR() );
 		
-		//自分のマレットとの接触判定
-		int n=parent.CountMallet();
-		for(int i=0;i<n;i++){
-			Mallet m = parent.GetMallet(i);
-			if( m.getSurvival() ){
-				Circle mc = m.getCircle();
+		if( !clientflag ){
+		
+			Circle nc = new Circle(  cir.getX()+vec.getX(), cir.getY()+vec.getY(), cir.getR() );
+			
+			//自分のマレットとの接触判定
+			int n=parent.CountMallet();
+			for(int i=0;i<n;i++){
+				Mallet m = parent.GetMallet(i);
+				if( m.getSurvival() ){
+					Circle mc = m.getCircle();
+					if( GeneralCalc.CheckCircleInCircle(nc, mc) ){
+						float rad = GeneralCalc.CircleToCircleAngle(mc, nc );
+						vec.setF(GeneralCalc.CircleInCircleSize(nc, mc),rad);
+						Log.d("setF","mc:: ("+mc.getX()+","+mc.getY()+") nc:: ("+nc.getX()+","+nc.getY()+") angle = "+GeneralCalc.RadToDegree(rad));
+						nc.setX(nc.getX()+vec.getX());
+						nc.setY(nc.getY()+vec.getY());
+						break;
+					}
+				}
+			}
+			
+			//敵のマレットとの接触判定
+			for(int i=0;i<_enemy.size();i++){
+				Circle mc = _enemy.get(i).getCircle();
 				if( GeneralCalc.CheckCircleInCircle(nc, mc) ){
 					float rad = GeneralCalc.CircleToCircleAngle(mc, nc );
 					vec.setF(GeneralCalc.CircleInCircleSize(nc, mc),rad);
@@ -58,29 +119,31 @@ public class Pack extends Task{
 					break;
 				}
 			}
+	
+			//左端チェック
+			if( GeneralCalc.CheckCircleRefLeft(nc) ){
+				nc.setX( 2*refl-(nc.getX()-nc.getR()) );
+				vec.revX();
+			}
+			//右端チェック
+			if( GeneralCalc.CheckCircleRefRight(nc) ){
+				nc.setX( 2*refr - (nc.getX()+nc.getR()) );
+				vec.revX();
+			}
+			
+			cir.set( nc );
+			
+			int dx = cir.getDrawX(),dy = cir.getDrawY();
+			Log.d("dx dy","dx = "+dx+" dy = "+dy+" angle = " + GeneralCalc.RadToDegree(vec.getAngle()));
+			dst.set(dx,dy,dx+packimg.getWidth(),dy+packimg.getHeight());
+			
+			//向きに合わせて回転
+			tmpAngle = GeneralCalc.RadToDegree(vec.getAngle());
+			matrix.setRotate(tmpAngle);
+			zimg = Bitmap.createBitmap(packimg,0,0,packimg.getWidth(),packimg.getHeight(),matrix,true);
+			src.set(0,0,zimg.getWidth(),zimg.getHeight());
 		}
-
-		//左端チェック
-		if( GeneralCalc.CheckCircleRefLeft(nc) ){
-			nc.setX( 2*refl-(nc.getX()-nc.getR()) );
-			vec.revX();
-		}
-		//右端チェック
-		if( GeneralCalc.CheckCircleRefRight(nc) ){
-			nc.setX( 2*refr - (nc.getX()+nc.getR()) );
-			vec.revX();
-		}
-		
-		cir.set( nc );
-		
-		int dx = cir.getDrawX(),dy = cir.getDrawY();
-		Log.d("dx dy","dx = "+dx+" dy = "+dy+" angle = " + GeneralCalc.RadToDegree(vec.getAngle()));
-		dst.set(dx,dy,dx+packimg.getWidth(),dy+packimg.getHeight());
-		
-		//向きに合わせて回転
-		matrix.setRotate(GeneralCalc.RadToDegree(vec.getAngle()));
-		zimg = Bitmap.createBitmap(packimg,0,0,packimg.getWidth(),packimg.getHeight(),matrix,true);
-		src.set(0,0,zimg.getWidth(),zimg.getHeight());
+		clientflag = false;
 		return true;
 	}
 	
