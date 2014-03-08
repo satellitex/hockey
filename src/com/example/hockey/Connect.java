@@ -26,6 +26,10 @@ public class Connect {
 	
 	public Connect(){
 	}
+	public void cansel(){
+		write.cansel();
+		read.cansel();
+	}
 	public void Init(){
 		Log.d("init","connect init-0");
 		Serverflag = false;
@@ -65,12 +69,14 @@ public class Connect {
 			rcvflag=false;
 			rcvstr = new Scanner(tmpRcvstr);
 			int sn = rcvstr.nextInt();
-			if( Clientflag )Log.d("koko","koko rcvstr Client");
-			if( Serverflag )Log.d("koko","koko rcvstr Server");
-			Log.d("koko","koko rcvstr count : "+sn+" step_count = "+step_count);
+			if( sn == -1 ) rcvstr=null;
+//			if( Clientflag )Log.d("koko","koko rcvstr Client");
+//			if( Serverflag )Log.d("koko","koko rcvstr Server");
+//			Log.d("koko","koko rcvstr count : "+sn+" step_count = "+step_count);
 		} else {
 			rcvstr = null;
 		}
+		
 	}
 	
 	public void sendString(String str){
@@ -85,10 +91,10 @@ public class Connect {
 	
 	//最初に呼び出す
 	public Scanner FastCall(){
-		Log.d("koko","koko FastCall 0 count+"+step_count);
+	//	Log.d("koko","koko FastCall 0 count+"+step_count);
 		Scanner ret = null;
 		if( Serverflag ){//サーバーなら
-			Log.d("koko","koko Server");
+	//		Log.d("koko","koko Server");
 			//受信結果が真になるまで待つ ( step_count より ↑なら )
 			recieve();
 			ret = rcvstr;
@@ -97,15 +103,15 @@ public class Connect {
 			//受信開始
 		}
 		if( Clientflag ){//クライアントなら
-			Log.d("koko","koko Client");
+		//	Log.d("koko","koko Client");
 			sendstr = String.format("%d ", step_count+1);
 		}
-		Log.d("koko","koko FastCall 1 count+"+step_count);
+		//Log.d("koko","koko FastCall 1 count+"+step_count);
 		return ret;
 	}
 	//最後に呼び出す
 	public Scanner LastCall(){
-		Log.d("koko","koko LastCall 0");
+	//	Log.d("koko","koko LastCall 0");
 		Scanner ret = null;
 		if( Serverflag ){//サーバーなら
 			//状況を送信
@@ -128,7 +134,7 @@ public class Connect {
 			if( send_flag ) write.set(sendstr);
 			send_flag=false;
 		}
-		Log.d("koko","koko LastCall 1");
+	//	Log.d("koko","koko LastCall 1");
 		return ret;
 	}
 }

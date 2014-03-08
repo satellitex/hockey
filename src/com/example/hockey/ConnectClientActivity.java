@@ -30,7 +30,7 @@ public class ConnectClientActivity extends Activity {
 		mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 		Log.d("setuzoku","intent oks");
 		//接続履歴のあるデバイスを取得
-		pairedDeviceAdapter = new ArrayAdapter(this, R.layout.paireddevicelist);
+		pairedDeviceAdapter = new ArrayAdapter<String>(this, R.layout.paireddevicelist);
 		//BluetoothAdapterから、接続履歴のあるデバイスの情報を取得
 		Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
 		if(pairedDevices.size() > 0){

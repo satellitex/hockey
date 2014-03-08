@@ -28,7 +28,6 @@ public class MalletPoint extends Task {
 	private int stx,sty;//一番ひだりうえのX座標、Y座標
 	private int may;//間
 	
-	private int count = 0;
 	
 	private Rect srcs,src[],dst[],dstc[];//元画像、表示部位
 	
@@ -67,8 +66,6 @@ public class MalletPoint extends Task {
 		
 	@Override
 	public boolean onUpdate(){
-				
-		count++;
 		
 		//マレット消費分だけ体力を減らす
 		if( parent.CountMallet() > 0 ){

@@ -18,7 +18,6 @@ public class ServerConnect extends Thread{
     public final UUID TECHBOOSTER_BTSAMPLE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     
     private Connect connect;
-    private int count;
     
     private ServerActivity parent;
     final Handler handler;
@@ -27,7 +26,6 @@ public class ServerConnect extends Thread{
         //各種初期化
 		handler = handle;
 		parent = p;
-		count = 0;
 		connect = c;
         BluetoothServerSocket tmpServSock = null;
         myServerAdapter = btAdapter;
@@ -44,7 +42,6 @@ public class ServerConnect extends Thread{
 	public void run(){	
         BluetoothSocket receivedSocket = null;
         while(true){
-        	count++;
             try{
                 //クライアント側からの接続要求待ち。ソケットが返される。
                 receivedSocket = servSock.accept();
@@ -57,6 +54,12 @@ public class ServerConnect extends Thread{
             if(receivedSocket != null){
                 //ソケットを受け取れていた(接続完了時)の処理
                 //RwClassにmanageSocketを移す
+            	try {
+					servSock.close();
+				} catch (IOException e) {
+					// TODO 自動生成された catch ブロック
+					e.printStackTrace();
+				}
             	connect.setSocket(receivedSocket);
     	        connect.setServet();
 	        	handler.sendEmptyMessage(1);

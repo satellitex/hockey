@@ -4,17 +4,13 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class ConnectMenuActivity extends Activity {
     private final int REQUEST_ENABLE_BLUETOOTH = 10;	
-    private final int REQUESTCODE_BLUETOOTH_ON = 10;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

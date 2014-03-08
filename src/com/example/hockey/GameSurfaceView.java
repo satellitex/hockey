@@ -1,6 +1,5 @@
 package com.example.hockey;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.Log;
@@ -12,7 +11,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	
 	private GameMgr _gameMgr;
 	
-	private Activity parent;
 	
 	//現在何本指で押してるか
 	private int now_input_count = 0;
@@ -58,30 +56,34 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	public boolean onTouchEventEx(MotionEvent event){
 		
 		
-		if( _gameMgr.isStart() ){
+		 if( _gameMgr.isEnd() ){
+				if( _gameMgr.issinEnd() ){
+					_gameMgr.setReset();
+				}
+		 } else if( _gameMgr.isStart() ){
 			int count = event.getPointerCount();		
 			int malletflag = 0;
 			
 			Log.d("touch","touch count = "+count);
+			while( _gameMgr.isMalletUpdate() != 0 );
+			_gameMgr.startMalletUpdate();
 			
 			//タッチした分だけマレットを追加
 			if( (now_input_count <= count) ){
-				while( _gameMgr.isMalletUpdate() == 3 );
-				_gameMgr.startMalletUpdate();
 				for(int i=0;i<count;i++){
 					//Log.d("touch","touch id = "+ i +" X="+event.getX(i)+"Y="+event.getY(i));
-					if( event.getX(i) > RatioAdjustment.RefLeft() ){
+					if( event.getX(i) > RatioAdjustment.RefLeft() && event.getY(i) > RatioAdjustment.MalletR() ){
 						malletflag |= _gameMgr.AddMallet(new Circle(event.getX(i),event.getY(i),RatioAdjustment.MalletR()));
 					}
 				}
-				_gameMgr.endMalletupdate();
 			}
 			
 			String binary = Integer.toBinaryString(malletflag);
 			Log.d("touch","touch flag = "+binary);
 			
 			//マレットを削除
-			_gameMgr.KillMallet(malletflag);
+			_gameMgr.setMalletState(malletflag);
+			_gameMgr.endMalletupdate();
 		} else {
 			Ready r = _gameMgr.getReady();
 			r.setOk();

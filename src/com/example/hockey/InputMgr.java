@@ -28,13 +28,13 @@ public class InputMgr{
 		case 0:	//スタート前
 			int state = s.nextInt();
 			Ready ready = parent.getReady();
-			Log.d("koko","koko state is "+state);
+//			Log.d("koko","koko state is "+state);
 			if( state == 4 ){
 				if( parent.getConnect().isClient() && ready.isHaOK() ){
 					parent.gameStart();
 				}
 			} else if( state >= 1 ){
-				if( parent.getReady().isOkOk() ){
+				if( !parent.isStart() && !parent.isEnd() &&  parent.getReady().isOkOk() ){
 					parent.getReady().setYoi();
 				}
 			}
@@ -66,8 +66,18 @@ public class InputMgr{
 			y = s.nextFloat();
 			vx = s.nextFloat();
 			vy = s.nextFloat();
-			parent.getPack().set(x, y, vx, vy);
+			parent.getPack().set(RatioAdjustment.changeHX(x),RatioAdjustment.changeHY(y), vx, vy);
 			break;
+		case 3://結果を渡される
+			N = s.nextInt();
+			if( !parent.isEnd() && parent.isStart()){
+				parent.gameEnd();
+				if( N == 0 ){
+					parent.setWin();
+				} else {
+					parent.setLose();
+				}
+			}
 		}
 	}
 }

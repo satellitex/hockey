@@ -4,14 +4,20 @@ public class Circle {
 	private float x,y;	//中心座標
 	private float r;		//半径
 	
-	Circle(){
+	public Circle(){
 		x = y = r = 0;
 	}
 	
-	Circle( float _x, float _y, float _r ){
+	public Circle( float _x, float _y, float _r ){
 		x = _x;
 		y = _y;
 		r = _r;
+	}
+	
+	public Circle( Circle c ){
+		x = c.getX();
+		y = c.getY();
+		r = c.getR();
 	}
 	
 	public void set (float _x, float _y, float _r ){

@@ -1,12 +1,5 @@
 package com.example.hockey;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.util.Log;
 
 public class EnemyMallet extends Task{
 	private final float SIZE;	//初期サイズ

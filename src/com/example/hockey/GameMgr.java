@@ -9,11 +9,11 @@ import android.util.Log;
 
 public class GameMgr {
 	
-	private Task Home;
 	private FpsController fps = new FpsController();
 	private LinkedList<Task> _backList = new LinkedList<Task>();//背景等
 	private LinkedList<Task> _mainList = new LinkedList<Task>();//ゲーム中に使うタスク
 	private Ready ready;//ゲーム前に前面に現れるタスク
+	private GameResult result;//ゲーム結果を表示するタスク
 	private Pack pack;
 	private LinkedList<Mallet> _malletList = new LinkedList<Mallet>();//まれっとリスト
 	private LinkedList<EnemyMallet> _enemyList = new LinkedList<EnemyMallet>(); 
@@ -23,8 +23,10 @@ public class GameMgr {
 	private int pre_malletcount;//前回の生存マレットの数
 	
 	private boolean start_flag;//ゲームが始まっている時に立つ
-	private boolean update_flag;//向こうから更新がきたら立つ
+	private boolean end_flag;//ゲームが終わった跡に立つ
+	private boolean sinend_flag;//ゲームを終えていい時に立つ
 	private boolean send_flag;//送る時に立つ
+	private boolean reset_flag;//リセット時煮立てるフラグ
 
 	private Scanner input;
 	private InputMgr _input;
@@ -32,12 +34,16 @@ public class GameMgr {
 	//マレットの追加更新に使うもの
 	private Circle[] TmpMallet;	//一時保存するマレット
 	private int malletup_flag;//0:追加更新無し,1:更新中,2更新後,3追加中
+	private int mallet_state;//マレットの削除フラグのビット列
 	private int tmpmallet_nums;
 		
 	public GameMgr(Connect c) {
 		Log.d("koko","koko In GameMgr()");
 		connect = c;
 		start_flag=false;
+		end_flag=false;
+
+		//前回のマレットの数
 		pre_malletcount = 0;
 
 		//マレット添付
@@ -62,22 +68,48 @@ public class GameMgr {
         
         //前面
         ready = new Ready();
+        result = new GameResult();
 	}
 	
 	public void StartRead(){ 
 		connect.StartRead();
 	}
 	
+	public void init(){
+		start_flag=false;
+		end_flag=false;
+		sinend_flag=false;
+		
+		pre_malletcount = 0;
+		
+		ready.init();
+		pack.init();
+		result.init();
+		_malletList.clear();
+	}
+	
+	//取得系
 	public Ready getReady(){ return ready; }
 	public Connect getConnect(){ return connect; }
-	
-	public boolean isStart(){ return start_flag; }
-	public void gameStart(){ start_flag = true; }
-	
 	public Pack getPack(){ return pack; }
 	
+	//スタート系
+	public boolean isStart(){ return start_flag; }
+	public void gameStart(){ start_flag = true; }
+
+	//チェック系
+	public boolean isEnd(){ return end_flag; }
+	public boolean issinEnd(){ return sinend_flag; }
+	
+	//セット系
+	public void gameEnd(){ end_flag = true;}
+	public void setLose(){ result.setLose(); }
+	public void setWin(){ result.setWin(); }
+	public void setReset(){ reset_flag=true; }
+	//セット系２	
 	public void startMalletUpdate(){ malletup_flag=1; tmpmallet_nums=0; }
-	public void endMalletupdate(){ if( malletup_flag == 1 ) malletup_flag=0; }
+	public void endMalletupdate(){ if( malletup_flag == 1 ) malletup_flag=2; }
+	public void setMalletState(int st){ mallet_state = st; }
 	public int isMalletUpdate(){ return malletup_flag; }
     
 	//マレットを追加
@@ -90,11 +122,10 @@ public class GameMgr {
     	}
     	
     	if( _malletList.size() < 5 && bitflag == 0 && _state.getHp() > 1f ){
-    		malletup_flag = 2;
     		_state.DecreaseHp(1f);
-    		TmpMallet[tmpmallet_nums] = mallet;
+    		TmpMallet[tmpmallet_nums] = new Circle(mallet);
 //    		_malletList.add( mallet );
-    		bitflag |= (1<<(_malletList.size()-1)); 
+    		bitflag |= (1<<(_malletList.size()+tmpmallet_nums)); 
     		tmpmallet_nums++;
     	}
     	return bitflag;
@@ -122,8 +153,7 @@ public class GameMgr {
     		Log.d("koko","koko In GameMgr.onUpdate()");
     		
     		Scanner tmps = null;
-    		update_flag = false;
-    		send_flag = false;
+    		send_flag = true;
     		
     		//データを持ってくる
     		tmps = connect.FastCall();
@@ -134,7 +164,11 @@ public class GameMgr {
     		//入力された情報を反映
     		if( input != null ){
     			_input.onUpdate(input);
-    			update_flag = true;
+    		}
+    		
+    		if( reset_flag ){
+    			this.init();
+    			reset_flag=false;
     		}
     		
     		//背面
@@ -146,79 +180,103 @@ public class GameMgr {
                     }
             }
 
-            if( start_flag ){
+            if( end_flag ){//ゲーム終了後の結果
+            	connect.startSend();
+            	connect.sendString("3");
+            	
+            	if( result.isLose() ) connect.sendString("0");
+            	else connect.sendString("1");
+            	
+            	if( result.onUpdate() ) {
+            		sinend_flag = true;
+            	}
+            } else if( start_flag ){//ゲーム中の処理
             	
             	int survivalmalletnums = 0;
             	
             	
             	//マレットの追加処理
+            	Log.d("koko","koko before add mallet");
             	while( malletup_flag == 1 );
+            	Log.d("koko","koko before go mallet");
             	if( malletup_flag == 2 ){
             		malletup_flag = 3;
+                	Log.d("koko","koko before in mallet "+tmpmallet_nums);
             		for(int i=0;i<tmpmallet_nums;i++){
+            			Log.d("koko","koko TmpMalle "+i+" :: ( "+TmpMallet[i].getX()+" , "+TmpMallet[i].getY()+" )");
             			_malletList.add(new Mallet(TmpMallet[i].getX(),TmpMallet[i].getY()));
             		}
+            		Log.d("koko","koko mallet_state : "+Integer.toBinaryString(mallet_state));
+            		this.KillMallet(mallet_state);
             		send_flag = true;
+            		Log.d("koko","koko mallet update end");
             	}
         		malletup_flag = 0;	//更新無し
             	
         		//自分のマレットを更新
 	            for(int i=0; i<_malletList.size(); i++){
+	                if( _malletList.get(i).getSurvival() ){
+	                	survivalmalletnums |= (1<<i);
+	                }
 	                if(_malletList.get(i).onUpdate() == false){ //更新失敗なら
 	                	Log.d("mallet","delete_mallet : "+ i );
 	                    _malletList.remove(i);              //そのタスクを消す
 	                    i--;
 	                }
-	                if( _malletList.get(i).getSurvival() ){
-	                	survivalmalletnums++;
-	                }
 	            }
 	            if( survivalmalletnums != pre_malletcount ){
 	            	send_flag = true;
 	            }
+        		Log.d("koko","koko My mallet update end");
 	            
 	            //敵のマレットを更新
 	            for(int i=0;i<_enemyList.size();i++){
 	            	_enemyList.get(i).onUpdate();
 	            }
+        		Log.d("koko","koko Enemy mallet update end");
 
 	            //クライアント側の送る処理
-	            if( connect.isClient() ){
-	            	connect.startSend();
-            		connect.sendString("1");
-            		connect.sendString(String.format("%d",survivalmalletnums) );
-            		for(int i=0,j=0;i<survivalmalletnums;i++){
-            			Mallet m;
-            			while( true ){
-            				m = _malletList.get(j);
-            				if( m.getSurvival() ) break;
-            				j++;
-            			}
-            			connect.sendString(String.format("%f %f %f",m.getHx(),m.getHy(),m.getCounter()));
-            		}
-            	}
+	            if( send_flag ){
+		            if( connect.isClient() ){
+		            	connect.startSend();
+	            		connect.sendString("1");
+	            		int N = Integer.bitCount(survivalmalletnums);
+	            		connect.sendString(String.format("%d",N) );
+	            		for(int i=0;i<_malletList.size();i++){
+	            			Mallet m;
+	            			if( ( (1<<i) & survivalmalletnums ) > 0 ){
+	            				m = _malletList.get(i);
+		            			connect.sendString(String.format("%f %f %f",m.getHx(),m.getHy(),m.getCounter()));
+	            			}
+	            		}
+	            	}
+	            }
 	            
+	            pack.setMalletState(survivalmalletnums);
 	            pack.onUpdate();
+        		Log.d("koko","koko Pack update end");
 	            
 	            //サーバー側の送る処理
-            	if( connect.isServer() ){//サーバーなら識別子２
-                	connect.startSend();
-            		connect.sendString("2");
-
-            		connect.sendString(String.format("%d",survivalmalletnums) );
-            		for(int i=0,j=0;i<survivalmalletnums;i++){
-            			Mallet m;
-            			while( true ){
-            				m = _malletList.get(j);
-            				if( m.getSurvival() ) break;
-            				j++;
-            			}
-            			connect.sendString(String.format("%f %f %f",m.getHx(),m.getHy(),m.getCounter()));
-            		}
-            		
-            		Vec v = pack.getVec();
-            		connect.sendString(String.format("%f %f %f",pack.getHx(),pack.getHy(),v.getX(),v.getY()));
-            	}
+	            if( send_flag ){
+	            	if( connect.isServer() ){//サーバーなら識別子２
+	                	connect.startSend();
+	            		connect.sendString("2");
+	            		int N = Integer.bitCount(survivalmalletnums);
+	            		connect.sendString(String.format("%d",N) );
+	            		Log.d("koko","koko server start");
+	            		for(int i=0;i<_malletList.size();i++){
+	            			Mallet m;
+	            			if( ( (1<<i) & survivalmalletnums ) > 0 ){
+	            				m = _malletList.get(i);
+		            			connect.sendString(String.format("%f %f %f",m.getHx(),m.getHy(),m.getCounter()));
+	            			}
+	            		}
+	            		
+	            		Vec v = pack.getVec();
+	            		connect.sendString(String.format("%f %f %f %f",pack.getHx(),pack.getHy(),v.getX(),v.getY()));
+	            		Log.d("koko","koko server end");
+	            	}
+	            }
             	
 	            
 	            
@@ -232,7 +290,7 @@ public class GameMgr {
 	            //前回の生存マレットの数を今回のものに上書き
 	            pre_malletcount = survivalmalletnums;
 	            
-            } else {
+            } else {//ゲームスタート前の情報
             	connect.startSend();
             	connect.sendString("0");
 	            //前面
@@ -264,15 +322,18 @@ public class GameMgr {
                     _backList.get(i).onDraw(c);//描画
             }
             //メイン
-            if( start_flag ){
+            if( end_flag ){//結果
+            	//前面
+            	result.onDraw(c);
+            } else if( start_flag ){
 	            for(int i=0; i<_malletList.size(); i++){
 	                _malletList.get(i).onDraw(c);//描画
 	            }
 	            pack.onDraw(c);
-	            for(int i=0; i<_backList.size(); i++){
+	            for(int i=0; i<_mainList.size(); i++){
 	                _mainList.get(i).onDraw(c);//描画
 	            }
-            } else {
+            }else {//スタート前
             	//前面
             	ready.onDraw(c);
             }

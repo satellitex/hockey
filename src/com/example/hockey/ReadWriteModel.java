@@ -1,5 +1,6 @@
 package com.example.hockey;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,6 +21,7 @@ public class ReadWriteModel extends Thread {
 	private String str;
 	private String tmpStr;
 	
+	private boolean loopflag=true;
 	Connect parent;
 	
 	public ReadWriteModel(BluetoothSocket socket,Connect p,boolean wf){
@@ -30,6 +32,14 @@ public class ReadWriteModel extends Thread {
 		
 		in = null;
 		out = null;
+		try {
+			in = socket.getInputStream();
+			out = socket.getOutputStream();
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		Log.d("loop","koko Read Write Model");
 	}
 	
 	public void set(String str){
@@ -62,46 +72,72 @@ public class ReadWriteModel extends Thread {
 	@Override
 	public void run(){
 		
-		while ( true ){
-			if( writef ){
+		if( writef ){
+			while ( loopflag ){
 				if( writeok ){
+					tmpStr+="\n";
 					str = tmpStr;
+/*
 					try {
 						out = socket.getOutputStream();
 					} catch( IOException e ){
 						e.printStackTrace();
+						continue;
 					}
+*/
 					try {
-						//Log.d("str","koko write str = "+str);
 						write(str.getBytes("UTF-8"));
 					} catch (UnsupportedEncodingException e) {
 						// TODO 自動生成された catch ブロック
-			            Log.e("TAG", "temp sockets not created", e);
+						e.printStackTrace();
 					}
 					writeok = false;
 				}
-			} else {
+			}
+		} else {
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			String rstr;
+			try {
+				Log.d("in","in loop");
+				while( loopflag ){
+					if ( (rstr = br.readLine()) != null ){
+						Log.d("in","in loop message :"+rstr);
+						parent.recieveString(rstr);
+					}
+				}
+				Log.d("in","in loop end");
+			} catch (IOException e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
+			}
+/*
 				try {
 					in = socket.getInputStream();
 				} catch (IOException e) {
 					// TODO 自動生成された catch ブロック
 		            Log.e("TAG", "temp sockets not created", e);
+		            continue;
 				}
+
 				String rstr = null;
 				try {
 					rstr = read();
 				} catch (IOException e ){
 					e.printStackTrace();
+					continue;
 				}
 				if( rstr != null && !rstr.isEmpty() ){
-				Log.d("str","koko read...OK ");
+						Log.d("str","koko read...OK ");
 						parent.recieveString(rstr);
+				} else {
+						Log.d("str","koko read Not");
 				}
-			}
+				*/
 		}
 	}
 
 	public void cansel(){
+		loopflag=false;
 		try {
 			socket.close();
 		} catch (IOException e) {

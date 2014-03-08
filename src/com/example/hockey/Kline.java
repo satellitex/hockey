@@ -4,25 +4,29 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
 public class Kline extends Task{
 	boolean viewflag;
 	private Paint paint = new Paint();	
-	private Matrix matrix = new Matrix();
 	private Bitmap img;
+	private Bitmap imgzone;
 	private Resources res = App.getInstance().getResources();
 	private Rect src;
 	private Rect dst;
+	private Rect srcz;
+	private Rect dstz;
 	
 	public Kline(){
 		int sx = RatioAdjustment.RefLeft(),sy = RatioAdjustment.GoalY();
 		
 		img = BitmapFactory.decodeResource(res, R.drawable.klineb);
+		imgzone = BitmapFactory.decodeResource(res, R.drawable.dontouch);	
 		src = new Rect(0,0,img.getWidth(),img.getHeight());
 		dst = new Rect(sx,sy,sx+img.getWidth(),sy+img.getHeight());
+		srcz = new Rect(0,0,imgzone.getWidth(),imgzone.getHeight());
+		dstz = new Rect(sx,0,sx+img.getWidth(),img.getHeight());
 		viewflag = true;
 	}
 
@@ -40,7 +44,8 @@ public class Kline extends Task{
 	
 	@Override
 	public void onDraw(Canvas c){
+		c.drawBitmap(imgzone, srcz, dstz, paint);
 		c.drawBitmap(img, src, dst, paint);
-	}	
+	}
 
 }

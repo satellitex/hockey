@@ -11,8 +11,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
@@ -22,9 +20,7 @@ public class ClientActivity extends Activity {
 
 	private GameSurfaceView _game;
 	
-	private final int REQUEST_ENABLE_BLUETOOTH = 10;	
 	BluetoothAdapter mBtAdapter;
-	private final int REQUESTCODE_BLUETOOTH_ON = 10;
 	ArrayAdapter<String> pairedDeviceAdapter;
 
     public Connect connect;
@@ -99,9 +95,16 @@ public class ClientActivity extends Activity {
 	@Override
 	public void onDestroy(){
 		Log.d("koko","koko onDdestroy client");
+		connect.cansel();
 		client.cancel();
 	}	
-
+	
+	@Override
+	public void onPause(){
+		connect.cansel();
+		client.cancel();
+	}
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event){
 		Log.d("touch","Activity event");

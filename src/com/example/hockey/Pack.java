@@ -33,6 +33,8 @@ public class Pack extends Task{
 	
 	private float tmpAngle;
 	
+	private int check_mallet_state;//チェックする自マレットのビット列
+	
 	public Pack(GameMgr p,LinkedList<EnemyMallet> enemy){
 		_enemy = enemy;
 		parent = p;
@@ -55,6 +57,16 @@ public class Pack extends Task{
 		clientflag = false;
 	}
 	
+	public void init(){
+		check_mallet_state = 0;
+		cir.set(0,0,cir.getR());
+		if( parent.getConnect().isClient() ){ 
+			vec = new Vec(8f,-10f);
+		} else {
+			vec = new Vec(-8f,10f);
+		}		
+	}
+	
 	public void rmEnemy(){
 		_enemy.clear();
 	}
@@ -63,7 +75,7 @@ public class Pack extends Task{
 	}
 	
 	public void set(float x,float y,float vx,float vy){
-		vec.set(vx, vy);
+		vec.set(-vx, -vy);
 		
 		float angle = GeneralCalc.RadToDegree(vec.getAngle());
 		Log.d("set","koko set ( "+x+", "+y+", "+angle);
@@ -77,6 +89,7 @@ public class Pack extends Task{
 		src.set(0,0,zimg.getWidth(),zimg.getHeight());
 		clientflag = true;
 	}
+	public void setMalletState(int st){ check_mallet_state = st; }
 	
 	public float getHx(){ return RatioAdjustment.getHX(cir.getX()); }
 	public float getHy(){ return RatioAdjustment.getHY(cir.getY()); }
@@ -93,13 +106,13 @@ public class Pack extends Task{
 			//自分のマレットとの接触判定
 			int n=parent.CountMallet();
 			for(int i=0;i<n;i++){
-				Mallet m = parent.GetMallet(i);
-				if( m.getSurvival() ){
+				if( ( check_mallet_state & (1<<i) ) > 0 ){
+					Mallet m = parent.GetMallet(i);
 					Circle mc = m.getCircle();
 					if( GeneralCalc.CheckCircleInCircle(nc, mc) ){
 						float rad = GeneralCalc.CircleToCircleAngle(mc, nc );
 						vec.setF(GeneralCalc.CircleInCircleSize(nc, mc),rad);
-						Log.d("setF","mc:: ("+mc.getX()+","+mc.getY()+") nc:: ("+nc.getX()+","+nc.getY()+") angle = "+GeneralCalc.RadToDegree(rad));
+	//						Log.d("setF","mc:: ("+mc.getX()+","+mc.getY()+") nc:: ("+nc.getX()+","+nc.getY()+") angle = "+GeneralCalc.RadToDegree(rad));
 						nc.setX(nc.getX()+vec.getX());
 						nc.setY(nc.getY()+vec.getY());
 						break;
@@ -134,7 +147,7 @@ public class Pack extends Task{
 			cir.set( nc );
 			
 			int dx = cir.getDrawX(),dy = cir.getDrawY();
-			Log.d("dx dy","dx = "+dx+" dy = "+dy+" angle = " + GeneralCalc.RadToDegree(vec.getAngle()));
+//			Log.d("dx dy","dx = "+dx+" dy = "+dy+" angle = " + GeneralCalc.RadToDegree(vec.getAngle()));
 			dst.set(dx,dy,dx+packimg.getWidth(),dy+packimg.getHeight());
 			
 			//向きに合わせて回転
@@ -143,7 +156,14 @@ public class Pack extends Task{
 			zimg = Bitmap.createBitmap(packimg,0,0,packimg.getWidth(),packimg.getHeight(),matrix,true);
 			src.set(0,0,zimg.getWidth(),zimg.getHeight());
 		}
+		
+		if( cir.getY() > RatioAdjustment.GoalY() ){
+			parent.gameEnd();
+			parent.setLose();
+		}
+		
 		clientflag = false;
+		check_mallet_state = 0;
 		return true;
 	}
 	

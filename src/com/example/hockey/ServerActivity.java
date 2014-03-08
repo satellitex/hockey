@@ -13,13 +13,11 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 public class ServerActivity extends Activity {
 	private GameSurfaceView _game;
 	
-    private final int REQUEST_ENABLE_BLUETOOTH = 10;	
     BluetoothAdapter mBtAdapter;
-    private final int REQUESTCODE_BLUETOOTH_ON = 10;
-    private final int SHOW_CONNECT_MENU = 0;
     ArrayAdapter<String> pairedDeviceAdapter;
     
     public Connect connect;
@@ -67,6 +65,13 @@ public class ServerActivity extends Activity {
 	@Override
 	public void onDestroy(){
 		Log.d("koko","koko onDdestroy server");
+		connect.cansel();
+		server.cancel();
+	}
+	
+	@Override
+	public void onPause(){
+		connect.cansel();
 		server.cancel();
 	}
 	
