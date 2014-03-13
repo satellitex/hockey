@@ -23,6 +23,7 @@ public class InputMgr{
 		}
 		Log.d("koko","koko kind is "+kind);
 		int N;
+		float x,y,b,vx,vy;
 		Pack pack;
 		switch ( kind ){
 		case 0:	//スタート前
@@ -45,9 +46,9 @@ public class InputMgr{
 			pack = parent.getPack();
 			pack.rmEnemy();
 			for(int i=0;i<N;i++){
-				float x = s.nextFloat();
-				float y = s.nextFloat();
-				float b = s.nextFloat();
+				x = s.nextFloat();
+				y = s.nextFloat();
+				b = s.nextFloat();
 				pack.addEnemy(i, RatioAdjustment.changeHX(x) , RatioAdjustment.changeHY(y), b);
 			}
 			break;
@@ -55,7 +56,6 @@ public class InputMgr{
 			N = s.nextInt();
 			pack = parent.getPack();
 			pack.rmEnemy();
-			float x,y,b,vx,vy;
 			for(int i=0;i<N;i++){
 				x = s.nextFloat();
 				y = s.nextFloat();
@@ -70,14 +70,28 @@ public class InputMgr{
 			break;
 		case 3://結果を渡される
 			N = s.nextInt();
+			Log.d("koko","koko input N = "+N);
 			if( !parent.isEnd() && parent.isStart()){
+				Log.d("koko","koko input accept");
 				parent.gameEnd();
 				if( N == 0 ){
 					parent.setWin();
+					Log.d("koko","koko input accept1");
 				} else {
 					parent.setLose();
+					Log.d("koko","koko input accept2");
 				}
 			}
+			break;
+		case 4://改訂版
+			if( !parent.isStart() ) {
+				parent.gameStart();
+			}
+			x = s.nextFloat();
+			y = s.nextFloat();
+			vx = s.nextFloat();
+			vy = s.nextFloat();
+			parent.getPack().set(RatioAdjustment.changeHX(x),RatioAdjustment.changeHY(y), vx, vy);
 		}
 	}
 }

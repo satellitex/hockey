@@ -23,6 +23,12 @@ public class RatioAdjustment {
 	//マレットの直径
 	private static float diameter;
 	
+	//パックの直径
+	private static float packd;
+	
+	//Don'tTouchZONEのY
+	private static float donty;
+	
 	public static void init(Activity main){
 		WindowManager wm = (WindowManager)main.getSystemService(Context.WINDOW_SERVICE);
 		Display disp = wm.getDefaultDisplay();
@@ -35,14 +41,18 @@ public class RatioAdjustment {
 		mleftspace = width/144;
 		lifegaugesize = rleft - mleftspace*2;
 		rright = width;
-		goaly = height - height/10;
+		goaly = height;
 		
 		fsize = (width-rleft);
 		fcenterx = (width + rleft)/2;
 		fcentery = 0;
 		
-		Bitmap mainimg = BitmapFactory.decodeResource(App.getInstance().getResources(), R.drawable.mallet_main);
-		diameter = mainimg.getWidth();
+		Bitmap tmp = BitmapFactory.decodeResource(App.getInstance().getResources(), R.drawable.mallet_main);
+		diameter = tmp.getWidth();
+		 tmp = BitmapFactory.decodeResource(App.getInstance().getResources(), R.drawable.pack);
+		 packd = tmp.getWidth();
+		 tmp = BitmapFactory.decodeResource(App.getInstance().getResources(), R.drawable.dontouch);
+		 donty = tmp.getHeight();
 	}
 	
 	//純粋な横幅
@@ -107,6 +117,16 @@ public class RatioAdjustment {
 		return diameter/2f;
 	}
 	
+	//パックの直径
+	public static float PackD(){
+		return packd;
+	}
+	
+	//Don'tTochZONEのY座標
+	public static float DontY(){
+		return donty;
+	}
+	
 	//比率座標を求めるX
 	public static float getHX(float x){
 		return (x - (float)rleft)/(float)FieldSizeX();
@@ -122,7 +142,7 @@ public class RatioAdjustment {
 	}
 	//比率座標を戻すY
 	public static float changeHY(float y){
-		return (1f-y)*(float)FieldSizeY()+height;
+		return height - (1f-y)*(float)FieldSizeY();
 	}
 	//比率半径を返す
 	public static float changeBR(float b){

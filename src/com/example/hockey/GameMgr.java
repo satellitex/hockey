@@ -86,6 +86,9 @@ public class GameMgr {
 		pack.init();
 		result.init();
 		_malletList.clear();
+		for(int i=0;i<_mainList.size();i++){
+			_mainList.get(i).init();
+		}
 	}
 	
 	//取得系
@@ -111,6 +114,7 @@ public class GameMgr {
 	public void endMalletupdate(){ if( malletup_flag == 1 ) malletup_flag=2; }
 	public void setMalletState(int st){ mallet_state = st; }
 	public int isMalletUpdate(){ return malletup_flag; }
+	public void setSendStart(){ send_flag=true; }
     
 	//マレットを追加
     public int AddMallet(Circle mallet){
@@ -153,7 +157,7 @@ public class GameMgr {
     		Log.d("koko","koko In GameMgr.onUpdate()");
     		
     		Scanner tmps = null;
-    		send_flag = true;
+    		send_flag = false;
     		
     		//データを持ってくる
     		tmps = connect.FastCall();
@@ -208,7 +212,6 @@ public class GameMgr {
             		}
             		Log.d("koko","koko mallet_state : "+Integer.toBinaryString(mallet_state));
             		this.KillMallet(mallet_state);
-            		send_flag = true;
             		Log.d("koko","koko mallet update end");
             	}
         		malletup_flag = 0;	//更新無し
@@ -224,9 +227,6 @@ public class GameMgr {
 	                    i--;
 	                }
 	            }
-	            if( survivalmalletnums != pre_malletcount ){
-	            	send_flag = true;
-	            }
         		Log.d("koko","koko My mallet update end");
 	            
 	            //敵のマレットを更新
@@ -235,7 +235,7 @@ public class GameMgr {
 	            }
         		Log.d("koko","koko Enemy mallet update end");
 
-	            //クライアント側の送る処理
+	            /*/クライアント側の送る処理
 	            if( send_flag ){
 		            if( connect.isClient() ){
 		            	connect.startSend();
@@ -250,13 +250,13 @@ public class GameMgr {
 	            			}
 	            		}
 	            	}
-	            }
+	            }*/
 	            
 	            pack.setMalletState(survivalmalletnums);
 	            pack.onUpdate();
         		Log.d("koko","koko Pack update end");
 	            
-	            //サーバー側の送る処理
+	            /*/サーバー側の送る処理
 	            if( send_flag ){
 	            	if( connect.isServer() ){//サーバーなら識別子２
 	                	connect.startSend();
@@ -276,9 +276,16 @@ public class GameMgr {
 	            		connect.sendString(String.format("%f %f %f %f",pack.getHx(),pack.getHy(),v.getX(),v.getY()));
 	            		Log.d("koko","koko server end");
 	            	}
-	            }
-            	
-	            
+	            }*/
+        		
+        		//CASE ４：
+        		if( send_flag ){
+		        	connect.startSend();
+		    		connect.sendString("4");
+		    		Vec v = pack.getVec();
+		    		connect.sendString(String.format("%f %f %f %f",pack.getHx(),pack.getHy(),v.getX(),v.getY()));
+		    		Log.d("koko","koko send end");
+        		}
 	            
 	            for(int i=0; i<_mainList.size(); i++){
 	                if(_mainList.get(i).onUpdate() == false){ //更新失敗なら

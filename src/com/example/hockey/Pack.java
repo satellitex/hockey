@@ -35,11 +35,15 @@ public class Pack extends Task{
 	
 	private int check_mallet_state;//チェックする自マレットのビット列
 	
+	private boolean mineflag;//自分の陣地か(true)、相手に送ったか(false)
+	
 	public Pack(GameMgr p,LinkedList<EnemyMallet> enemy){
 		_enemy = enemy;
 		parent = p;
 		packimg = BitmapFactory.decodeResource(res, R.drawable.pack);
 		cir = new Circle(RatioAdjustment.FieldCenterX(),RatioAdjustment.FieldCenterY(),packimg.getWidth()/2f);
+		
+		mineflag = true;
 
 		if( p.getConnect().isClient() ){ 
 			vec = new Vec(8f,-10f);
@@ -65,6 +69,7 @@ public class Pack extends Task{
 		} else {
 			vec = new Vec(-8f,10f);
 		}		
+		mineflag = true;
 	}
 	
 	public void rmEnemy(){
@@ -75,8 +80,9 @@ public class Pack extends Task{
 	}
 	
 	public void set(float x,float y,float vx,float vy){
+//		if( y < -RatioAdjustment.MalletD() ){
 		vec.set(-vx, -vy);
-		
+			
 		float angle = GeneralCalc.RadToDegree(vec.getAngle());
 		Log.d("set","koko set ( "+x+", "+y+", "+angle);
 		
@@ -88,6 +94,8 @@ public class Pack extends Task{
 		zimg = Bitmap.createBitmap(packimg,0,0,packimg.getWidth(),packimg.getHeight(),matrix,true);
 		src.set(0,0,zimg.getWidth(),zimg.getHeight());
 		clientflag = true;
+	//		
+//		}
 	}
 	public void setMalletState(int st){ check_mallet_state = st; }
 	
@@ -111,6 +119,8 @@ public class Pack extends Task{
 					Circle mc = m.getCircle();
 					if( GeneralCalc.CheckCircleInCircle(nc, mc) ){
 						float rad = GeneralCalc.CircleToCircleAngle(mc, nc );
+						float force = GeneralCalc.CircleInCircleSize(nc, mc);
+						force = force > 12f ? 12f: force;
 						vec.setF(GeneralCalc.CircleInCircleSize(nc, mc),rad);
 	//						Log.d("setF","mc:: ("+mc.getX()+","+mc.getY()+") nc:: ("+nc.getX()+","+nc.getY()+") angle = "+GeneralCalc.RadToDegree(rad));
 						nc.setX(nc.getX()+vec.getX());
@@ -121,6 +131,7 @@ public class Pack extends Task{
 			}
 			
 			//敵のマレットとの接触判定
+			/*
 			for(int i=0;i<_enemy.size();i++){
 				Circle mc = _enemy.get(i).getCircle();
 				if( GeneralCalc.CheckCircleInCircle(nc, mc) ){
@@ -132,7 +143,7 @@ public class Pack extends Task{
 					break;
 				}
 			}
-	
+			*/
 			//左端チェック
 			if( GeneralCalc.CheckCircleRefLeft(nc) ){
 				nc.setX( 2*refl-(nc.getX()-nc.getR()) );
@@ -157,9 +168,15 @@ public class Pack extends Task{
 			src.set(0,0,zimg.getWidth(),zimg.getHeight());
 		}
 		
+		if ( cir.getY() >= RatioAdjustment.MalletD() ){
+			mineflag = true;
+		}
 		if( cir.getY() > RatioAdjustment.GoalY() ){
 			parent.gameEnd();
 			parent.setLose();
+		} else if( mineflag && cir.getY() < RatioAdjustment.MalletD() ){
+			parent.setSendStart();
+			mineflag = false;
 		}
 		
 		clientflag = false;

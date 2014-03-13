@@ -9,4 +9,7 @@ public class Task{
 	
 	public void onDraw(Canvas c){
 	}
+	
+	public void init(){
+	}
 }

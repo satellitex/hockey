@@ -62,7 +62,9 @@ public class MalletPoint extends Task {
 		may = SIZE;
 	}
 	
-	
+	public void init(){
+		st.init();
+	}
 		
 	@Override
 	public boolean onUpdate(){

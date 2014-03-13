@@ -9,6 +9,11 @@ public class Status {
 		barrier = 5;		
 	}
 	
+	public void init(){
+		hp = 5f;
+		barrier = 5;				
+	}
+	
 	private void CalcBarrier(){
 		if( hp <= 0f ){
 			barrier = 0;
