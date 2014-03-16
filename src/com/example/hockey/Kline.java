@@ -26,7 +26,7 @@ public class Kline extends Task{
 		src = new Rect(0,0,img.getWidth(),img.getHeight());
 		dst = new Rect(sx,sy,sx+img.getWidth(),sy+img.getHeight());
 		srcz = new Rect(0,0,imgzone.getWidth(),imgzone.getHeight());
-		dstz = new Rect(sx,0,sx+img.getWidth(),img.getHeight());
+		dstz = new Rect(sx,0,sx+imgzone.getWidth(),imgzone.getHeight());
 		viewflag = true;
 	}
 

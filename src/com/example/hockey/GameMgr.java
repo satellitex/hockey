@@ -60,6 +60,7 @@ public class GameMgr {
 		pack = new Pack(this,_enemyList);
 
 		//背景
+		_backList.add( new GameBackground() );
 		_backList.add( new Kline() );
 		
 		//メイン
@@ -234,49 +235,10 @@ public class GameMgr {
 	            	_enemyList.get(i).onUpdate();
 	            }
         		Log.d("koko","koko Enemy mallet update end");
-
-	            /*/クライアント側の送る処理
-	            if( send_flag ){
-		            if( connect.isClient() ){
-		            	connect.startSend();
-	            		connect.sendString("1");
-	            		int N = Integer.bitCount(survivalmalletnums);
-	            		connect.sendString(String.format("%d",N) );
-	            		for(int i=0;i<_malletList.size();i++){
-	            			Mallet m;
-	            			if( ( (1<<i) & survivalmalletnums ) > 0 ){
-	            				m = _malletList.get(i);
-		            			connect.sendString(String.format("%f %f %f",m.getHx(),m.getHy(),m.getCounter()));
-	            			}
-	            		}
-	            	}
-	            }*/
 	            
 	            pack.setMalletState(survivalmalletnums);
 	            pack.onUpdate();
         		Log.d("koko","koko Pack update end");
-	            
-	            /*/サーバー側の送る処理
-	            if( send_flag ){
-	            	if( connect.isServer() ){//サーバーなら識別子２
-	                	connect.startSend();
-	            		connect.sendString("2");
-	            		int N = Integer.bitCount(survivalmalletnums);
-	            		connect.sendString(String.format("%d",N) );
-	            		Log.d("koko","koko server start");
-	            		for(int i=0;i<_malletList.size();i++){
-	            			Mallet m;
-	            			if( ( (1<<i) & survivalmalletnums ) > 0 ){
-	            				m = _malletList.get(i);
-		            			connect.sendString(String.format("%f %f %f",m.getHx(),m.getHy(),m.getCounter()));
-	            			}
-	            		}
-	            		
-	            		Vec v = pack.getVec();
-	            		connect.sendString(String.format("%f %f %f %f",pack.getHx(),pack.getHy(),v.getX(),v.getY()));
-	            		Log.d("koko","koko server end");
-	            	}
-	            }*/
         		
         		//CASE ４：
         		if( send_flag ){

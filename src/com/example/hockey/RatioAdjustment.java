@@ -121,6 +121,10 @@ public class RatioAdjustment {
 	public static float PackD(){
 		return packd;
 	}
+	//パックの半径
+	public static float PackR(){
+		return packd/2f;
+	}
 	
 	//Don'tTochZONEのY座標
 	public static float DontY(){

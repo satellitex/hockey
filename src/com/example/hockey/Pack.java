@@ -130,20 +130,6 @@ public class Pack extends Task{
 				}
 			}
 			
-			//敵のマレットとの接触判定
-			/*
-			for(int i=0;i<_enemy.size();i++){
-				Circle mc = _enemy.get(i).getCircle();
-				if( GeneralCalc.CheckCircleInCircle(nc, mc) ){
-					float rad = GeneralCalc.CircleToCircleAngle(mc, nc );
-					vec.setF(GeneralCalc.CircleInCircleSize(nc, mc),rad);
-					Log.d("setF","mc:: ("+mc.getX()+","+mc.getY()+") nc:: ("+nc.getX()+","+nc.getY()+") angle = "+GeneralCalc.RadToDegree(rad));
-					nc.setX(nc.getX()+vec.getX());
-					nc.setY(nc.getY()+vec.getY());
-					break;
-				}
-			}
-			*/
 			//左端チェック
 			if( GeneralCalc.CheckCircleRefLeft(nc) ){
 				nc.setX( 2*refl-(nc.getX()-nc.getR()) );
@@ -168,13 +154,12 @@ public class Pack extends Task{
 			src.set(0,0,zimg.getWidth(),zimg.getHeight());
 		}
 		
-		if ( cir.getY() >= RatioAdjustment.MalletD() ){
-			mineflag = true;
-		}
 		if( cir.getY() > RatioAdjustment.GoalY() ){
 			parent.gameEnd();
 			parent.setLose();
-		} else if( mineflag && cir.getY() < RatioAdjustment.MalletD() ){
+		} else if ( cir.getY() >= RatioAdjustment.PackR() ){
+			mineflag = true;
+		} else if( mineflag && cir.getY() < RatioAdjustment.PackR() ){
 			parent.setSendStart();
 			mineflag = false;
 		}
