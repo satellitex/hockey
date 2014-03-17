@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/resultbackground">
+
+<TextView
+    android:id="@+id/wincount"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignBaseline="@+id/textwin"
+    android:layout_alignBottom="@+id/textwin"
+    android:layout_toLeftOf="@+id/textwin"
+    android:text="wincount"
+    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+
+<TextView
+    android:id="@+id/textlose"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/textwin"
+    android:layout_below="@+id/textwin"
+    android:layout_marginTop="22dp"
+    android:text="敗" />
+
+<TextView
+    android:id="@+id/textwin"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignRight="@+id/twitterbutton"
+    android:layout_below="@+id/twitterbutton"
+    android:layout_marginRight="15dp"
+    android:layout_marginTop="44dp"
+    android:text="勝" />
+
+<ImageButton
+    android:id="@+id/twitterbutton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentTop="true"
+    android:layout_marginRight="17dp"
+    android:layout_marginTop="20dp"
+    android:background="@layout/twitterbutton" />
+
+<TextView
+    android:id="@+id/losecount"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignBottom="@+id/textlose"
+    android:layout_toLeftOf="@+id/textlose"
+    android:text="losecount"
+    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+</RelativeLayout>

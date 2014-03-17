@@ -38,7 +38,21 @@ public class ClientActivity extends Activity {
   		setContentView(R.layout.connect);
 
 		connect = new Connect();
-		_game = new GameSurfaceView(this,connect);
+
+		//ゲーム戻るハンドラー
+        final Handler handler2 = new Handler(){
+        	public void handleMessage( Message msg ){
+                Log.d("koko","koko in Hudler00");
+        		Intent intent = new Intent();
+        		intent.putExtra("wlcount", (String)msg.obj );
+                Log.d("koko","koko in Hudler01");
+        		setResult( Activity.RESULT_OK, intent );
+                Log.d("koko","koko in Hudler02");
+        		finish();
+                Log.d("koko","koko in Hudler03");
+        	}
+        };
+		_game = new GameSurfaceView(this,connect,handler2);
 		
 		setScreenContent(1);
 //  		setContentView(R.layout.clientwait);
@@ -65,7 +79,6 @@ public class ClientActivity extends Activity {
     		}
     	};
     	
-    	
     	//BluetoothAdapterから、接続履歴のあるデバイスの情報を取得
 		mBtAdapter = BluetoothAdapter.getDefaultAdapter();
   		Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
@@ -81,7 +94,7 @@ public class ClientActivity extends Activity {
   				String str = device.getName() + "\n" + device.getAddress();
   				Log.d("device","onItemClick333 "+str);
   				if( str.equals(item) ){
-  					Log("device.getNam()と接続中\n");
+  					Log(device.getName()+"と接続中\n");
   					connect.Init();
 	  		        Log.d("onItemClick","onItemClick4.0");
   		    		client = new ClientConnect(this,connect,device,mBtAdapter,handler);
@@ -93,19 +106,18 @@ public class ClientActivity extends Activity {
   		}
   		
 	}
-	
 	@Override
-	public void onDestroy(){
-		Log.d("koko","koko onDdestroy client");
+	public void onStop(){
+		super.onStop();
 		connect.cansel();
 		client.cancel();
 	}	
-	
+
 	@Override
-	public void onPause(){
-		connect.cansel();
-		client.cancel();
-	}
+	public void onDestroy(){
+		super.onDestroy();
+		Log.d("koko","koko onDdestroy client");
+	}	
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event){

@@ -20,6 +20,8 @@ import android.widget.Toast;
 public class ConnectClientActivity extends Activity {
     BluetoothAdapter mBtAdapter;
     ArrayAdapter<String> pairedDeviceAdapter;
+    
+    final private int requestcode = 1001;
 
     @Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +57,21 @@ public class ConnectClientActivity extends Activity {
 	            
 	            Intent intent = new Intent(ConnectClientActivity.this,ClientActivity.class);
 	            intent.putExtra("survername",item);
-	            startActivity(intent);
+	            startActivityForResult(intent,requestcode);
 	        	Log.d("onItemClick","onItemClick1");
 	        }
 	  }
 	  
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+		if( requestcode == requestCode ){
+			if( resultCode == Activity.RESULT_OK ){
+				String str = data.getStringExtra("wlcount");
+				Intent intent = new Intent(ConnectClientActivity.this,ResultActivity.class);
+	            intent.putExtra("wlcount",str);
+	            startActivity(intent);
+			}
+		}
 	}
 	
 	//汎用トースト

@@ -32,7 +32,20 @@ public class ServerActivity extends Activity {
 		RatioAdjustment.init(this);
 		
 		connect = new Connect();
-		_game = new GameSurfaceView(this,connect);
+		//ゲーム戻るハンドラー
+        final Handler handler2 = new Handler(){
+        	public void handleMessage( Message msg ){
+                Log.d("koko","koko in Hudler00");
+        		Intent intent = new Intent();
+        		intent.putExtra("wlcount", (String)msg.obj );
+                Log.d("koko","koko in Hudler01");
+        		setResult( Activity.RESULT_OK, intent );
+                Log.d("koko","koko in Hudler02");
+        		finish();
+                Log.d("koko","koko in Hudler03");
+        	}
+        };
+		_game = new GameSurfaceView(this,connect,handler2);
 		
 		setScreenContent(1);
 		
@@ -65,18 +78,18 @@ public class ServerActivity extends Activity {
 	}
 	
 	@Override
-	public void onDestroy(){
-		Log.d("koko","koko onDdestroy server");
+	public void onPause(){
+		super.onPause();
 		connect.cansel();
 		server.cancel();
 	}
 	
 	@Override
-	public void onPause(){
-		connect.cansel();
-		server.cancel();
+	public void onDestroy(){
+		super.onDestroy();
+		Log.d("koko","koko onDdestroy server");
 	}
-	
+		
 	@Override
 	public boolean onTouchEvent(MotionEvent event){
 		Log.d("touch","Activity event");

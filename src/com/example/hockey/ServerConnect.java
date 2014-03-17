@@ -22,8 +22,11 @@ public class ServerConnect extends Thread{
     private ServerActivity parent;
     final Handler handler;
     
+    private boolean loopflag;
+    
 	public ServerConnect(ServerActivity p,Connect c, BluetoothAdapter btAdapter,Handler handle){
         //各種初期化
+		loopflag=true;
 		handler = handle;
 		parent = p;
 		connect = c;
@@ -41,7 +44,7 @@ public class ServerConnect extends Thread{
 	@Override
 	public void run(){	
         BluetoothSocket receivedSocket = null;
-        while(true){
+        while(loopflag){
             try{
                 //クライアント側からの接続要求待ち。ソケットが返される。
                 receivedSocket = servSock.accept();
@@ -73,14 +76,25 @@ public class ServerConnect extends Thread{
 	        	break;
 	        }
         }
+        if( !loopflag ){
+	        try {
+				servSock.close();
+			} catch (IOException e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
+			}
+        }
         Log.d("koko","koko server connect owari");
         return;
 	}
 	
 	public void cancel(){
-		try {
+        Log.d("koko","koko ServerConnectCancel");
+		loopflag = false;
+		/*try {
 			servSock.close();
 		} catch( IOException e) { }
+		*/
 	}
 
 }

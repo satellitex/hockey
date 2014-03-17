@@ -2,6 +2,8 @@ package com.example.hockey;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -16,13 +18,19 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 	private int now_input_count = 0;
 	
 	private Thread _thread;
-	
-	public GameSurfaceView(Context context,Connect c) {
+	private boolean loopflag;
+	private Handler handler;
+	public GameSurfaceView(Context context,Connect c,Handler handle) {
 		super(context);
 		Log.d("koko","koko In GameSurfaceview()");
 		_gameMgr = new GameMgr(c);
 		getHolder().addCallback(this);
+		handler = handle;
+		loopflag=true;
 	}
+	
+	public GameMgr getMgr(){ return _gameMgr; }
+	
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
             //解像度情報変更通知 
@@ -39,17 +47,33 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
     		Log.d("koko","koko surface destroy");
+    		loopflag=false;
             _thread = null;
     }
     @Override
     public void run() {
     		_gameMgr.StartRead();
-    		while (_thread!=null) { //メインループ
+    		while ( loopflag ) { //メインループ
     				Log.d("koko","koko run start");
             		_gameMgr.onUpdate();
                     onDraw(getHolder());
                     Log.d("koko","koko run end");
+                    if( _gameMgr.isTheEnd() ){
+                    	loopflag=false;
+                    }
             }
+    		if( _gameMgr.isTheEnd() ){
+                Log.d("koko","koko in Hudler");
+                GameResult gr = _gameMgr.getResult();
+                Message msg= new Message();
+                msg.obj = Integer.toString(gr.getWin())+" "+Integer.toString(gr.getLose());
+                handler.sendMessage( msg );
+    		}
+    }
+    
+    
+    public void cancel(){
+    	loopflag=false;
     }
     
 
@@ -58,7 +82,11 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 		
 		 if( _gameMgr.isEnd() ){
 				if( _gameMgr.issinEnd() ){
-					_gameMgr.setReset();
+					if( event.getY() < RatioAdjustment.MalletR() ){
+						_gameMgr.TheEnd();
+					} else {
+						_gameMgr.setReset();
+					}
 				}
 		 } else if( _gameMgr.isStart() ){
 			int count = event.getPointerCount();		

@@ -110,39 +110,11 @@ public class ReadWriteModel extends Thread {
 				// TODO 自動生成された catch ブロック
 				e.printStackTrace();
 			}
-/*
-				try {
-					in = socket.getInputStream();
-				} catch (IOException e) {
-					// TODO 自動生成された catch ブロック
-		            Log.e("TAG", "temp sockets not created", e);
-		            continue;
-				}
 
-				String rstr = null;
-				try {
-					rstr = read();
-				} catch (IOException e ){
-					e.printStackTrace();
-					continue;
-				}
-				if( rstr != null && !rstr.isEmpty() ){
-						Log.d("str","koko read...OK ");
-						parent.recieveString(rstr);
-				} else {
-						Log.d("str","koko read Not");
-				}
-				*/
 		}
 	}
 
 	public void cansel(){
 		loopflag=false;
-		try {
-			socket.close();
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
 	}
 }

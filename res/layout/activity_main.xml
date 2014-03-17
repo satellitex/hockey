@@ -15,18 +15,21 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="78dp"
+        android:layout_marginBottom="76dp"
+        android:layout_marginLeft="2dp"
         android:background="@layout/hazimebutton"
         android:text="START" />
-
+    
     <ImageButton
         android:id="@+id/button02"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/button01"
-        android:layout_toRightOf="@+id/button01"
+        android:layout_marginBottom="76dp"
+        android:layout_marginRight="2dp"
         android:background="@layout/asobikatabutton"
         android:text="Rule" />
+
     
 </RelativeLayout>

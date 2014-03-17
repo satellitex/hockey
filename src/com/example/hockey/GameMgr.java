@@ -27,6 +27,8 @@ public class GameMgr {
 	private boolean sinend_flag;//ゲームを終えていい時に立つ
 	private boolean send_flag;//送る時に立つ
 	private boolean reset_flag;//リセット時煮立てるフラグ
+	private boolean the_end_flag;//完全終了フラグ
+	private boolean tmp_theend;//上の手むぷ
 
 	private Scanner input;
 	private InputMgr _input;
@@ -42,6 +44,8 @@ public class GameMgr {
 		connect = c;
 		start_flag=false;
 		end_flag=false;
+		the_end_flag=false;
+		tmp_theend=false;
 
 		//前回のマレットの数
 		pre_malletcount = 0;
@@ -96,6 +100,8 @@ public class GameMgr {
 	public Ready getReady(){ return ready; }
 	public Connect getConnect(){ return connect; }
 	public Pack getPack(){ return pack; }
+	public GameResult getResult(){ return result; }
+	public boolean isTheEnd(){ return the_end_flag; }
 	
 	//スタート系
 	public boolean isStart(){ return start_flag; }
@@ -116,6 +122,7 @@ public class GameMgr {
 	public void setMalletState(int st){ mallet_state = st; }
 	public int isMalletUpdate(){ return malletup_flag; }
 	public void setSendStart(){ send_flag=true; }
+	public void TheEnd(){ tmp_theend=true; }
     
 	//マレットを追加
     public int AddMallet(Circle mallet){
@@ -185,7 +192,15 @@ public class GameMgr {
                     }
             }
 
-            if( end_flag ){//ゲーム終了後の結果
+            if( tmp_theend ){
+            	Log.d("koko","koko the End Ok");
+            	the_end_flag = true;
+            }
+            
+            if( the_end_flag ){
+            	connect.startSend();
+            	connect.sendString("5");
+            } else if( end_flag ){//ゲーム終了後の結果
             	connect.startSend();
             	connect.sendString("3");
             	
@@ -275,6 +290,7 @@ public class GameMgr {
 	            	connect.sendString("0");	            	
 	            }
             }
+            
             
             tmps = connect.LastCall();
     		if( connect.isClient() ){

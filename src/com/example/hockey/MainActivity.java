@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
 		//ホーム画面
 	  private void setHomeScreenContent() {  
 //	    	Log.d("haitta","setHomeScreenContent onClick");
-		    Button nextButton = (Button) findViewById(R.id.button01);
+		    ImageButton nextButton = (ImageButton) findViewById(R.id.button01);
 		    nextButton.setOnClickListener(new OnClickListener() {
 		    public void onClick(View v) {
 		//   	Log.d("haitta","setHomeScreenContent onClick");
@@ -32,6 +32,16 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 		      }
 		    });
+		    
+		    ImageButton expButton = (ImageButton)findViewById(R.id.button02);
+		    expButton.setOnClickListener(new OnClickListener() {
+		    	public void onClick(View v) {
+		//   	Log.d("haitta","setHomeScreenContent onClick");
+				Intent intent = new Intent(MainActivity.this, ConnectMenuActivity.class);
+				startActivity(intent);
+		      }
+		    });	    
+		    
 	  }
 
 	  @Override

@@ -25,10 +25,16 @@ public class Connect {
 	private boolean send_flag;
 	
 	public Connect(){
+		read = null;
+		write = null;
 	}
 	public void cansel(){
-		write.cansel();
-		read.cansel();
+		if( write != null ){
+			write.cansel();
+		}
+		if( read != null ){
+			read.cansel();
+		}
 	}
 	public void Init(){
 		Log.d("init","connect init-0");

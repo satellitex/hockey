@@ -92,6 +92,10 @@ public class InputMgr{
 			vx = s.nextFloat();
 			vy = s.nextFloat();
 			parent.getPack().set(RatioAdjustment.changeHX(x),RatioAdjustment.changeHY(y), vx, vy);
+			break;
+		case 5://終了
+			parent.TheEnd();
+			break;
 		}
 	}
 }

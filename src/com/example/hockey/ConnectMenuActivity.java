@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 public class ConnectMenuActivity extends Activity {
     private final int REQUEST_ENABLE_BLUETOOTH = 10;	
+    final private int requestcode = 1001;
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,7 @@ public class ConnectMenuActivity extends Activity {
 	    WaitButton.setOnClickListener(new OnClickListener() {
 	    public void onClick(View v) {
 	    	Intent intent = new Intent(ConnectMenuActivity.this,ServerActivity.class);
-	    	startActivity(intent);
+	    	startActivityForResult(intent,requestcode);
 	      }
 	    });
 	}
@@ -72,6 +73,13 @@ public class ConnectMenuActivity extends Activity {
                 Toast.makeText(this,"BluetoothがONにしてもらえませんでした。",Toast.LENGTH_LONG).show();
               finish();
             }
+        } else if ( requestCode == requestcode ){
+			if( ResultCode == Activity.RESULT_OK ){
+				String str = date.getStringExtra("wlcount");
+				Intent intent = new Intent(ConnectMenuActivity.this,ResultActivity.class);
+	            intent.putExtra("wlcount",str);
+	            startActivity(intent);
+			}      	
         }
   }	  	
 	  //汎用トースト

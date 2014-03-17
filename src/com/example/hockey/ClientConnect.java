@@ -23,10 +23,12 @@ public class ClientConnect extends Thread{
     Connect connect;
     
     final Handler handler;
+    private boolean loopflag;
  
     //コンストラクタ定義
     public ClientConnect(ClientActivity p,Connect c, BluetoothDevice device, BluetoothAdapter btAdapter,Handler handle){
         //各種初期化
+    	loopflag=true;
     	handler = handle;
     	parent = p;
         BluetoothSocket tmpSock = null;
@@ -50,7 +52,7 @@ public class ClientConnect extends Thread{
             myClientAdapter.cancelDiscovery();
         }
  
-        while ( true ){
+        while ( loopflag ){
 
         	count++;
         	Log.d("count","client count "+count);
@@ -79,13 +81,16 @@ public class ClientConnect extends Thread{
 	        	break;
 	        }
         }
+        if( !loopflag ){
+	        try {
+	            clientSocket.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+        }
     }
  
     public void cancel() {
-            try {
-                clientSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    		loopflag=false;
       }
 }

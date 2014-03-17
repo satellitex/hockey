@@ -43,4 +43,11 @@ public class GeneralCalc {
 	public static float DegreeToRad(float angle){
 		return angle*(2f*(float)Math.PI)/360f;
 	}
+	public static int NumberDigit(int num){
+		int ret = 1;
+		while( (num=num/10) > 0 ){
+			ret++;
+		}
+		return ret;
+	}
 }
