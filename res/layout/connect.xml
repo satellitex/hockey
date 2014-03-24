@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/menubackground" >
@@ -38,4 +39,15 @@
         android:layout_below="@+id/imagebutton2"
         android:layout_marginTop="35dp"
         android:background="@layout/connectwaitbutton" />
+    
+    <com.google.ads.AdView
+         android:id="@+id/adView"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_centerHorizontal="true"
+         android:layout_alignParentBottom="true"
+         ads:adUnitId="@string/admob_unit_id"
+         ads:adSize="BANNER"
+         ads:testDevices="TEST_EMULATOR"
+         ads:loadAdOnCreate="true" />
 </RelativeLayout>

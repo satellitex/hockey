@@ -10,6 +10,10 @@
 	<!--Bluetoothの設定変更を許可する-->
 	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN">
 	 </uses-permission>
+	 
+	<!-- Admobを有効にする -->
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 	    
     <uses-sdk
         android:minSdkVersion="10"
@@ -36,5 +40,7 @@
         <activity android:label="@string/app_name" android:name=".ServerActivity" android:screenOrientation="portrait"></activity>
         <activity android:label="@string/app_name" android:name=".ResultActivity" android:screenOrientation="portrait"></activity>
         <activity android:label="@string/app_name" android:name=".HowToPlayActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name="com.google.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
 	</application>
 </manifest>
