@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
 		    expButton.setOnClickListener(new OnClickListener() {
 		    	public void onClick(View v) {
 		//   	Log.d("haitta","setHomeScreenContent onClick");
-				Intent intent = new Intent(MainActivity.this, ConnectMenuActivity.class);
+				Intent intent = new Intent(MainActivity.this, HowToPlayActivity.class);
 				startActivity(intent);
 		      }
 		    });	    

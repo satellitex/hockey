@@ -4,36 +4,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/resultbackground">
 
-<TextView
-    android:id="@+id/wincount"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignBaseline="@+id/textwin"
-    android:layout_alignBottom="@+id/textwin"
-    android:layout_toLeftOf="@+id/textwin"
-    android:text="wincount"
-    android:textAppearance="?android:attr/textAppearanceLarge" />
-
-
-<TextView
-    android:id="@+id/textlose"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignLeft="@+id/textwin"
-    android:layout_below="@+id/textwin"
-    android:layout_marginTop="22dp"
-    android:text="敗" />
-
-<TextView
-    android:id="@+id/textwin"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignRight="@+id/twitterbutton"
-    android:layout_below="@+id/twitterbutton"
-    android:layout_marginRight="15dp"
-    android:layout_marginTop="44dp"
-    android:text="勝" />
-
 <ImageButton
     android:id="@+id/twitterbutton"
     android:layout_width="wrap_content"
@@ -45,12 +15,85 @@
     android:background="@layout/twitterbutton" />
 
 <TextView
+    android:id="@+id/textresult"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/twitterbutton"
+    android:layout_centerHorizontal="true"
+    android:text="結　果" 
+    android:gravity="center"
+    android:textColor="#FF0000"
+    android:textSize="50sp"/>
+
+<TextView
+    android:id="@+id/textwin"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignRight="@+id/twitterbutton"
+    android:layout_below="@+id/textresult"
+    android:layout_marginRight="15dp"
+    android:textSize="30sp"
+    android:textColor="#FF0000"
+    android:text="勝" />
+
+<TextView
+    android:id="@+id/wincount"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignBaseline="@+id/textwin"
+    android:layout_alignBottom="@+id/textwin"
+    android:layout_below="@+id/textresult"
+    android:layout_toLeftOf="@+id/textwin"
+    android:text="wincount"
+    android:textSize="40sp"
+    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+
+<TextView
+    android:id="@+id/textlose"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignLeft="@+id/textwin"
+    android:layout_below="@+id/textwin"
+    android:layout_marginTop="22dp"
+    android:textSize="30sp"
+    android:textColor="#0000FF"
+    android:text="敗" />
+
+
+
+<TextView
     android:id="@+id/losecount"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignBottom="@+id/textlose"
     android:layout_toLeftOf="@+id/textlose"
     android:text="losecount"
+    android:textSize="40sp"
     android:textAppearance="?android:attr/textAppearanceLarge" />
+
+<TextView
+    android:id="@+id/resulttext"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentRight="true"
+    android:layout_centerVertical="true"
+    android:background="#222222"
+    android:gravity="center"
+    android:text="結果"
+    android:textColor="#EEEEEE"
+    android:textSize="50sp" />
+
+<ImageButton
+    android:id="@+id/returnbutton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="30dp"
+    android:layout_marginLeft="30dp"
+    android:background="@layout/returnbutton" />
+
 
 </RelativeLayout>

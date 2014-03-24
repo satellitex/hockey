@@ -322,6 +322,7 @@ public class GameMgr {
             	//前面
             	ready.onDraw(c);
             }
+           // fps.onDraw(c);
     		Log.d("koko","koko onDraw 1");
     }
 

@@ -82,7 +82,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
 		
 		 if( _gameMgr.isEnd() ){
 				if( _gameMgr.issinEnd() ){
-					if( event.getY() < RatioAdjustment.MalletR() ){
+					if( event.getY() < RatioAdjustment.MalletR()*1.5f ){
 						_gameMgr.TheEnd();
 					} else {
 						_gameMgr.setReset();

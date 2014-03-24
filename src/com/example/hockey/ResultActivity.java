@@ -35,6 +35,25 @@ public class ResultActivity extends Activity{
         TextView textl = (TextView)findViewById(R.id.losecount);
         textl.setText(Integer.toString(lc));
 		Log.d("koko","koko ResultActivity04");
+		
+		TextView resulttext = (TextView)findViewById(R.id.resulttext);
+		if( wc > lc ){
+			if( wc > lc*5 ){
+				resulttext.setText("あなたの圧勝");
+			} else {
+				resulttext.setText("あなたの勝ち");				
+			}
+		} else if( wc < lc ){
+			if( wc*5 < lc ){
+				resulttext.setText("あなたの惨敗");
+			} else {
+				resulttext.setText("あなたの負け");				
+			}			
+		} else {
+			resulttext.setText("引き分け");							
+		}
+		
+		
   		setHomeScreenContent();
 		Log.d("koko","koko ResultActivity05");
 	}
@@ -47,11 +66,11 @@ public class ResultActivity extends Activity{
 		    	String tweet = new String();
 		    	try {
 		    	    tweet = "https://twitter.com/intent/tweet?text="
-		    	        + URLEncoder.encode(wc+"勝 "+lc+"敗 でした", "UTF-8")
+		    	        + URLEncoder.encode("この度の戒めホッケーの対戦結果を晒しあげるのじゃ　"+wc+"勝 "+lc+"敗", "UTF-8")
 		    	        + "+"
-		    	        + URLEncoder.encode("#タグ", "UTF-8")
+		    	        + URLEncoder.encode("#imashimehockey", "UTF-8")
 		    	        + "&url="
-		    	        + URLEncoder.encode("http://tnko.com/", "UTF-8");
+		    	        + URLEncoder.encode("http://imashimekun.miraiserver.com/", "UTF-8");
 		    	} catch (UnsupportedEncodingException e) {
 		    	    e.printStackTrace();
 		    	}
@@ -59,7 +78,13 @@ public class ResultActivity extends Activity{
 		    	startActivity(intent);
 		      }
 		    });
-
+		    
+		    ImageButton returnButton = (ImageButton) findViewById(R.id.returnbutton);
+		    returnButton.setOnClickListener(new OnClickListener() {
+		    public void onClick(View v) {
+		    	finish();
+		      }
+		    });
 	  }
 
 	  @Override

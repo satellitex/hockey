@@ -24,7 +24,7 @@ public class Kline extends Task{
 		img = BitmapFactory.decodeResource(res, R.drawable.klineb);
 		imgzone = BitmapFactory.decodeResource(res, R.drawable.dontouch);	
 		src = new Rect(0,0,img.getWidth(),img.getHeight());
-		dst = new Rect(sx,sy,sx+img.getWidth(),sy+img.getHeight());
+		dst = new Rect(sx,sy-img.getHeight()*2,sx+img.getWidth(),sy-img.getHeight());
 		srcz = new Rect(0,0,imgzone.getWidth(),imgzone.getHeight());
 		dstz = new Rect(sx,0,sx+imgzone.getWidth(),imgzone.getHeight());
 		viewflag = true;
